@@ -1,0 +1,44 @@
+<div class="sidebar">
+    <img class="logo" src="<?php echo base_url(); ?>assets/img/logo-admin.png" alt=""/>
+
+    <div class="menu">
+        <ul>
+            <!--<li class="hasSub news">
+                <i></i>
+                <a class="<?php echo ($page == 'add-category' || $page == 'all-categories' || $page == 'edit-category') ? 'active' : ''; ?>" href="#">Category</a>
+                <ul class="sub">
+                    <li class="<?php echo ($page == 'add-category') ? 'active' : ''; ?>"><a href="<?php echo base_url() . ADMIN_URL; ?>/add-category">Add Category</a></li>
+                    <li class="<?php echo ($page == 'all-categories') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/all-categories">All Categories</a></li>
+                </ul>
+            </li>-->
+            <li class="hasSub events">
+                <i></i>
+                <a class="<?php echo ($page == 'add-opportunity' || $page == 'all-opportunities' || $page == 'edit-opportunity') ? 'active' : ''; ?>" href="#">Opportunity</a>
+                <ul class="sub">
+                    <li class="<?php echo ($page == 'add-opportunity') ? 'active' : ''; ?>"><a href="<?php echo base_url() . ADMIN_URL; ?>/add-opportunity">Add Job</a></li>
+                    <li class="<?php echo ($page == 'all-opportunities') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/all-opportunities">All Jobs</a></li>
+                </ul>
+            </li>
+            <li class="hasSub inquiries">
+                <i></i>
+                <a class="<?php echo ($page == 'import' || $page == 'jd-import') ? 'active' : ''; ?>" href="#">Import</a>
+                <ul class="sub">
+                    <li class="<?php echo ($page == 'import') ? 'active' : ''; ?>"><a href="<?php echo base_url() . ADMIN_URL; ?>/import">Import Jobs</a></li>
+                    <li class="<?php echo ($page == 'jd-import') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/jd-import">Import Job Descriptions</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.hasSub > a').click(function () {
+            $('.hasSub').children('.sub').slideUp();
+            $('.hasSub').children('a').removeClass('temp-active');
+            $(this).addClass('temp-active');
+            $(this).siblings('.sub').slideToggle();
+        });
+    });
+</script>
