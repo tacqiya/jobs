@@ -383,11 +383,133 @@ class Admin extends CI_Controller
 		$this->load->view('elements/footer', $data);
 	}
 
+	// public function publish_post() {
+	// 	if ($this->input->post()) {
+	// 		$formData = $this->input->post();
+	// 		$updateQuery = $this->common->updateQuery(TBL_JOB, array('id' => $formData['dataid']), array('publish' => 'published'));
+	// 		echo json_encode(['success' => true]);
+	// 	}
+	// }
+
 	public function publish_post() {
 		if ($this->input->post()) {
 			$formData = $this->input->post();
-			$updateQuery = $this->common->updateQuery(TBL_JOB, array('id' => $formData['dataid']), array('publish' => 'published'));
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true); 
+			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true); 
+			unset($get_job_data->id);
+			$get_job_data->publish = 'published';
+			// _e($get_job_data);exit;
+			if($check_req_id) {
+				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
+			} else {
+				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
+			}
 			echo json_encode(['success' => true]);
 		}
 	}
+
+	public function data_import() {
+		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
+			$path = $_SERVER['DOCUMENT_ROOT'].'career-opportunities/excel-dump/jobs_file.csv'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';
+			$arr_file = explode('.', $path);
+			$extension = end($arr_file);
+			if ('csv' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+			} elseif ('xls' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+			} else {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			}
+			$spreadsheet = $reader->load($path);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			$row = 1;
+			$highestRow = count($sheetData); //_e($sheetData);exit;
+			foreach ($sheetData as $worksheet) {
+				if ($row > 3) {
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+					$insertData = [
+						'requisition_id' => $worksheet[0],
+						'requisition_title' => $worksheet[1],
+						'description_value' => $worksheet[2],
+						'justification' => $worksheet[3],
+						'org_name' => $worksheet[4],
+						'sector_name' => $worksheet[5],
+						'division_name' => $worksheet[6],
+						'dept_name' => $worksheet[7],
+						'recruiter_name' => $worksheet[8],
+						'recruiter_email' => $worksheet[9],
+						'hiring_manager_name' => $worksheet[10],
+						'hiring_manager_email' => $worksheet[11],
+						'apply_link' => $worksheet[12],
+						'project_title' => $worksheet[13],
+						'project_manager_name' => $worksheet[14],
+						'project_manager_email' => $worksheet[15],
+						'emp_end_date' => $worksheet[16],
+						'project_code' => $worksheet[17],
+						'project_auth_name' => $worksheet[18],
+						'project_auth_email' => $worksheet[19],
+						'date_posted' => $worksheet[20],
+						'closing_date' => $worksheet[21],
+						'category' => $worksheet[22],
+						'college' => $worksheet[23],
+						'slug' => uniqid(uniqid()),
+						'descriptions' => $worksheet[24],
+						'qualifications' => $worksheet[25],
+						'publish' => '',
+						'datetime' => date('Y-m-d H:i:s')
+					];
+					if ($checkid) {
+						$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
+					} else {
+						$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+					}
+					// _e($insertData);
+				}
+				$row++;
+			}
+			if ($inserted) {
+				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
+				exit;
+			} else {
+				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
+				exit;
+			}
+	}
+
+	public function opportunity_temp()
+	{
+		$this->is_login();
+		$data['page'] = 'all-opportunities-temp';
+		$data['opportunities'] = $this->common->getAll(TBL_JOB_TEMP, 'id', 'ASC'); //_e($data['opportunities']);exit;
+		$this->load->view('elements/header', $data);
+		$this->load->view('elements/sidebar', $data);
+		$this->load->view('opportunities_temp', $data);
+		$this->load->view('elements/footer', $data);
+	}
+
+	public function edit_opprotunity_temp($id)
+	{
+		$this->is_login();
+		if ($this->input->post()) {
+			extract($this->input->post());
+
+			$data_pass = $this->input->post();
+			// echo "<pre>"; print_r($data_pass);exit;
+			$this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+			if ($this->db->trans_status()) {
+				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
+			} else {
+				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
+			}
+		}
+		$data['page'] = 'edit-opportunity-temp';
+		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
+		$data['opportunity'] = $this->common->getRowBy(TBL_JOB_TEMP, 'id', $id);
+		$this->load->view('elements/header', $data);
+		$this->load->view('elements/sidebar', $data);
+		$this->load->view('edit-opportunity-new', $data);
+		$this->load->view('elements/footer', $data);
+	}
+
 }

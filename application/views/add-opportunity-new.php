@@ -6,13 +6,9 @@
             <label>Category</label>
             <select class="input-field" name="category" id="category">
                 <option value="">Select Category</option>
-                <?php if (isset($category)) {
-                    foreach ($category as $cat) {
-                ?>
-                        <option value="<?= $cat->title ?>"><?= $cat->title ?></option>
-                <?php }
-                }
-                ?>
+                        <option value="Staff">Staff</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Research">Research</option>
             </select>
         </div>
         <div class="form-group clear" >

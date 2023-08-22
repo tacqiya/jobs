@@ -22,3 +22,7 @@ $route[ADMIN_URL .'/jd-import'] = 'admin/jd_import';
 
 $route[ADMIN_URL . '/dlt'] = 'admin/dlt';
 $route[ADMIN_URL . '/publish-job'] = 'admin/publish_post';
+
+$route[ADMIN_URL . '/data-import'] = 'admin/data_import';
+$route[ADMIN_URL .'/opportunities-temp'] = 'admin/opportunity_temp';
+$route[ADMIN_URL .'/edit-opportunity-temp/(:num)'] = 'admin/edit_opprotunity_temp/$1';

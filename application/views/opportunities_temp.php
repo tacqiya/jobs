@@ -6,9 +6,9 @@
     }
 </style>
 <div class="page">
-    <h6 class="common-title">All Published Jobs</h6>
+    <h6 class="common-title">All Temporary Updated Jobs</h6>
 
-    <table class="table" id="<?= TBL_JOB ?>">
+    <table class="table" id="<?= TBL_JOB_TEMP ?>">
         <tr>
             <th>#</th>
             <th>Action</th>
@@ -22,7 +22,7 @@
             <th>Recruiter</th>
             <th>Hiring Manager</th>
             <th>Project Manager</th>
-            <!-- <th>Publish</th> -->
+            <th>Publish</th>
         </tr>
         <?php
         $x = 1;
@@ -32,8 +32,7 @@
                 <tr>
                     <td><?php echo $x; ?></td>
                     <td class="actions">
-                        <a target="_blank" href="<?php echo MAIN_URL; ?>opportunity?lang=en&redirectionURI=<?php echo $row->slug; ?>" class="btn view"></a>
-                        <a href="<?php echo base_url() . ADMIN_URL; ?>/edit-opportunity/<?php echo $row->id; ?>" class="btn edit"></a>
+                        <a href="<?php echo base_url() . ADMIN_URL; ?>/edit-opportunity-temp/<?php echo $row->id; ?>" class="btn edit"></a>
                         <a href="javascript:void(0)" data-id="<?php echo $row->id; ?>" class="btn dlt"></a>
                     </td>
                     <td><?php echo $row->category; ?></td>
@@ -46,13 +45,13 @@
                     <td><?php echo $row->recruiter_name . ' ' . $row->recruiter_email; ?></td>
                     <td><?php echo $row->hiring_manager_name . '<br>' . $row->hiring_manager_email; ?></td>
                     <td><?php echo $row->project_manager_name . '<br>' . $row->project_manager_email; ?></td>
-                    <!-- <td>
+                    <td>
                         <?php if ($row->publish == 'published') { ?>
                             <span>Published</span>
                         <?php } else { ?>
-                            <button class="btn btn-info publish-btn" data-id="<?= $row->id ?>">Publish</button>
+                            <button class="btn btn-info publish-btn" data-id="<?= $row->requisition_id ?>">Publish</button>
                         <?php } ?>
-                    </td> -->
+                    </td>
                 </tr>
         <?php
                 $x++;

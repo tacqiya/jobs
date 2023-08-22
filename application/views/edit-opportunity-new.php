@@ -6,13 +6,9 @@
             <label>Category</label>
             <select class="input-field" name="category" id="category">
                 <option value="">Select Category</option>
-                <?php if (isset($category)) {
-                    foreach ($category as $cat) {
-                        ?>
-                        <option value="<?= $cat->title ?>" <?= ($cat->title == $opportunity->category) ? 'selected' : ''; ?>><?= $cat->title ?></option>
-                    <?php }
-                }
-                ?>
+                        <option value="Staff" <?= ($opportunity->category == 'Staff') ? 'selected' : ''; ?>>Staff</option>
+                        <option value="Faculty" <?= ($opportunity->category == 'Faculty') ? 'selected' : ''; ?>>Faculty</option>
+                        <option value="Research" <?= ($opportunity->category == 'Research') ? 'selected' : ''; ?>>Research</option>
             </select>
         </div>
 

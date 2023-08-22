@@ -95,3 +95,4 @@ define('TBL_LOGIN', 'khpu_career_oppor_login');
 define('TBL_CAREER', 'khpu_career_opportunities');
 define('TBL_CATEGORY', 'khpu_opportunity_categories'); 
 define('TBL_JOB', 'khpu_career_job'); 
+define('TBL_JOB_TEMP', 'khpu_career_job_temp'); 
