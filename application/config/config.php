@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+error_reporting(0);
 // TimeZone Set
 if(function_exists('date_default_timezone_set')){
     date_default_timezone_set(TIME_ZONE);
@@ -13,7 +13,7 @@ ini_set("upload_max_filesize", '64M');  // should be added on ini setting in php
 ini_set("post_max_size", '64M');        // should be added on ini setting in php.ini or server setting
 ini_set("zlib.output_compression", 'on');
 
-$config['base_url'] = 'http://localhost/wordpress-test/career-opportunities/';
+$config['base_url'] = 'http://localhost/career-opportunities/';
 
 $config['index_page'] = '';
 

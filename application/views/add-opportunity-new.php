@@ -125,6 +125,10 @@
             <label>Closing Date</label>
             <input class="input-field" type="text" name="closing_date" />
         </div>
+        <div class="form-group clear">
+            <label>Status Details</label>
+            <input class="input-field" type="text" name="status_details" />
+        </div>
 
         <div class="form-group clear">
             <label>Job Descriptions</label>

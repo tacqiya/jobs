@@ -122,6 +122,10 @@
             <label>Closing Date</label>
             <input class="input-field" type="text" name="closing_date" value="<?= $opportunity->closing_date ?>" />
         </div>
+        <div class="form-group clear">
+            <label>Status Details</label>
+            <input class="input-field" type="text" name="status_details" value="<?= $opportunity->status_details ?>" />
+        </div>
 
         <div class="form-group clear">
             <label>Job Descriptions</label>
@@ -174,8 +178,8 @@
     }
 
     $("#category").on("change", function () {
-        var valueSelected = this.value;
-        if (valueSelected == 2) {
+        var valueSelected = this.value; console.log(valueSelected)
+        if (valueSelected == 'Faculty') {
             $('#college').attr('disabled', false);
             $('#college').closest('.form-group').css('display', 'block');
         } else {

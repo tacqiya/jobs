@@ -411,7 +411,7 @@ class Admin extends CI_Controller
 
 	public function data_import() {
 		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
-			$path = $_SERVER['DOCUMENT_ROOT'].'career-opportunities/excel-dump/jobs_file.csv'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';
+			$path = $_SERVER['DOCUMENT_ROOT'].'/career-opportunities/excel-dump/jobs_file.xlsx'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';
 			$arr_file = explode('.', $path);
 			$extension = end($arr_file);
 			if ('csv' == $extension) {
@@ -426,37 +426,44 @@ class Admin extends CI_Controller
 			$row = 1;
 			$highestRow = count($sheetData); //_e($sheetData);exit;
 			foreach ($sheetData as $worksheet) {
-				if ($row > 3) {
+				if ($row > 1) {
+					if(strtolower($worksheet[4]) == 'hourly') {
+						$worksheet[4] = 'Staff';
+					} else if(strtolower($worksheet[4]) == 'professional') {
+						$worksheet[4] = 'Faculty';
+					} else if(strtolower($worksheet[4]) == 'executives') {
+						$worksheet[4] = 'Research';
+					}
+					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
+					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo='.$worksheet[0].'&portal=8116755942&reqNo=17218&isOnLogoutPage=true';
 					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+					// HasBeenApproved => $worksheet[5]
 					$insertData = [
-						'requisition_id' => $worksheet[0],
-						'requisition_title' => $worksheet[1],
-						'description_value' => $worksheet[2],
-						'justification' => $worksheet[3],
-						'org_name' => $worksheet[4],
-						'sector_name' => $worksheet[5],
-						'division_name' => $worksheet[6],
-						'dept_name' => $worksheet[7],
-						'recruiter_name' => $worksheet[8],
-						'recruiter_email' => $worksheet[9],
-						'hiring_manager_name' => $worksheet[10],
-						'hiring_manager_email' => $worksheet[11],
-						'apply_link' => $worksheet[12],
-						'project_title' => $worksheet[13],
-						'project_manager_name' => $worksheet[14],
-						'project_manager_email' => $worksheet[15],
-						'emp_end_date' => $worksheet[16],
-						'project_code' => $worksheet[17],
-						'project_auth_name' => $worksheet[18],
-						'project_auth_email' => $worksheet[19],
-						'date_posted' => $worksheet[20],
-						'closing_date' => $worksheet[21],
-						'category' => $worksheet[22],
-						'college' => $worksheet[23],
-						'slug' => uniqid(uniqid()),
-						'descriptions' => $worksheet[24],
-						'qualifications' => $worksheet[25],
+						'requisition_id' => $worksheet[0], //RequisitionNumber - 0
+						'requisition_title' => $worksheet[2], //RequisitionDescription - 1
+						'description_value' => $worksheet[3], //JobInfoLongDescription - 3
+						'date_posted' => $worksheet[6], //TargetStartDate
+						'status_details' => $worksheet[8],
+						'project_code' => $worksheet[9],
+						'project_auth_name' => $worksheet[10],
+						'project_auth_email' => $worksheet[11],
+						'project_manager_name' => $worksheet[13],
+						'project_manager_email' => $worksheet[14],
+						'descriptions' => $worksheet[16], //DescriptionExternalHTML
+						'closing_date' => $worksheet[18], //COMPLETION_DATE
+						'hiring_manager_name' => $worksheet[19] . ' ' . $worksheet[20],
+						'hiring_manager_email' => $worksheet[22],
+						'recruiter_name' => $worksheet[23] . ' ' . $worksheet[24],
+						'recruiter_email' => $worksheet[25],
+						'org_name' => $worksheet[28], //Organization
+						'sector_name' => $worksheet[29],
+						'division_name' => $worksheet[30],
+						'dept_name' => $worksheet[31],
+						'apply_link' => $apply_link,
 						'publish' => '',
+						'slug' => uniqid(uniqid()),
+						'category' => $worksheet[4],
+						'college' => (strpos(strtolower($worksheet[31]), 'college') !== false) ? $worksheet[31] : '',
 						'datetime' => date('Y-m-d H:i:s')
 					];
 					if ($checkid) {
