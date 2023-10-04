@@ -13,9 +13,9 @@
                 } ?>
             </select>
         </div>
-        <div class="form-group clear" <?= ($opportunity->category != 2)? 'style="display: none;"' : ''; ?>>
+        <div class="form-group clear" <?= ($opportunity->category != 'Faculty')? 'style="display: none;"' : ''; ?>>
             <label>College</label>
-            <select class="input-field" name="college" id="college" <?= ($opportunity->category != 2)? 'disabled' : ''; ?>>
+            <select class="input-field" name="college" id="college" <?= ($opportunity->category != 'Faculty')? 'disabled' : ''; ?>>
                 <option>Select College</option>
                         <option value="College of Engineering" <?= ($opportunity->college == 'College of Engineering') ? 'selected' : ''; ?>>College of Engineering</option>
                         <option value="College of Arts and Science" <?= ($opportunity->college == 'College of Arts and Science') ? 'selected' : ''; ?>>College of Arts and Science</option>

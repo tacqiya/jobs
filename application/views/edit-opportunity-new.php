@@ -12,9 +12,9 @@
             </select>
         </div>
 
-        <div class="form-group clear">
+        <div class="form-group clear" <?= ($opportunity->category != 'Faculty')? 'style="display: none;"' : ''; ?>>
             <label>College</label>
-            <select class="input-field" name="college" id="college">
+            <select class="input-field" name="college" id="college" <?= ($opportunity->category != 'Faculty')? 'disabled' : ''; ?>>
                 <option value="">Select College</option>
                 <option value="College of Engineering" <?= ($opportunity->college == 'College of Engineering') ? 'selected' : ''; ?>>College of Engineering</option>
                 <option value="College of Arts and Science" <?= ($opportunity->college == 'College of Arts and Science') ? 'selected' : ''; ?>>College of Arts and Science</option>
@@ -27,11 +27,7 @@
             <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" />
         </div>
         <div class="form-group clear">
-            <label>Requisition Title</label>
-            <input class="input-field" type="text" name="requisition_title" value="<?= $opportunity->requisition_title ?>" />
-        </div>
-        <div class="form-group clear">
-            <label>Description Value</label>
+            <label>Position Title</label>
             <input class="input-field" type="text" name="description_value" value="<?= $opportunity->description_value ?>" />
         </div>
         <div class="form-group clear">
@@ -53,10 +49,6 @@
         <div class="form-group clear">
             <label>Justification</label>
             <input class="input-field" type="text" name="justification" value="<?= $opportunity->justification ?>" />
-        </div>
-        <div class="form-group clear">
-            <label>Organization Name</label>
-            <input class="input-field" type="text" name="org_name" value="<?= $opportunity->org_name ?>" />
         </div>
         <div class="form-group clear">
             <label>Sector Name</label>
@@ -113,10 +105,6 @@
         <div class="form-group clear">
             <label>Project Authorizer Name</label>
             <input class="input-field" type="text" name="project_auth_name" value="<?= $opportunity->project_auth_name ?>" />
-        </div>
-        <div class="form-group clear">
-            <label>Date Posted</label>
-            <input class="input-field" type="text" name="date_posted" value="<?= $opportunity->date_posted ?>" />
         </div>
         <div class="form-group clear">
             <label>Closing Date</label>

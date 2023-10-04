@@ -94,7 +94,7 @@ class Admin extends CI_Controller
 		$this->is_login();
 		$data['page'] = 'all-categories';
 		$data['categories'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
-		
+
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('categories', $data);
@@ -139,7 +139,7 @@ class Admin extends CI_Controller
 
 			$data_pass = $this->input->post(); //echo "<pre>"; print_r($data_pass);exit;
 			$data_pass['slug'] = uniqid(uniqid());
-			
+
 			$this->db->insert(TBL_JOB, $data_pass);
 			if ($this->db->trans_status()) {
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been added successfully.');
@@ -214,6 +214,9 @@ class Admin extends CI_Controller
 			extract($this->input->post());
 
 			$data_pass = $this->input->post();
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
+			$data_pass['slug'] = $check_temp_req_id->slug;
 			// echo "<pre>"; print_r($data_pass);exit;
 			$this->db->update(TBL_JOB, $data_pass, array('id' => $id));
 			if ($this->db->trans_status()) {
@@ -337,7 +340,7 @@ class Admin extends CI_Controller
 		$this->is_login();
 		$data['page'] = 'jd-import';
 		$all_data = [];
-// _e($_FILES);
+		// _e($_FILES);
 		if (isset($_FILES["file"]["name"])) { //_e($_FILES["file"]["name"]);exit;
 			$path = $_FILES["file"]["tmp_name"];
 			$arr_file = explode('.', $_FILES['file']['name']);
@@ -355,11 +358,11 @@ class Admin extends CI_Controller
 			$highestRow = count($sheetData);
 			foreach ($sheetData as $worksheet) {
 				if ($row >= 2) {
-					$checkid = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true); 
+					$checkid = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
 					if ($checkid) {
 						$insertData = [
-							'descriptions' => $worksheet[3],//$worksheet[2].' '.$worksheet[3].' '.$worksheet[4].' '.$worksheet[5],
-							'qualifications' => $worksheet[4]//$worksheet[6].' '.$worksheet[7].' '.$worksheet[8].' '.$worksheet[9]
+							'descriptions' => $worksheet[3], //$worksheet[2].' '.$worksheet[3].' '.$worksheet[4].' '.$worksheet[5],
+							'qualifications' => $worksheet[4] //$worksheet[6].' '.$worksheet[7].' '.$worksheet[8].' '.$worksheet[9]
 						];
 						// _e($insertData);
 						$inserted = $this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], $insertData);
@@ -391,16 +394,18 @@ class Admin extends CI_Controller
 	// 	}
 	// }
 
-	public function publish_post() {
+	public function publish_post()
+	{
 		if ($this->input->post()) {
 			$formData = $this->input->post();
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true); 
-			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true); 
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true);
+			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true);
 			unset($get_job_data->id);
 			$get_job_data->publish = 'published';
 			// _e($get_job_data);exit;
-			if($check_req_id) {
+			if ($check_req_id) {
 				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
 			} else {
 				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
 				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
@@ -409,60 +414,68 @@ class Admin extends CI_Controller
 		}
 	}
 
-	public function data_import() {
+	public function data_import()
+	{
 		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
-			$path = $_SERVER['DOCUMENT_ROOT'].'/career-opportunities/excel-dump/jobs_file.xlsx'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';
-			$arr_file = explode('.', $path);
-			$extension = end($arr_file);
-			if ('csv' == $extension) {
-				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-			} elseif ('xls' == $extension) {
-				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
-			} else {
-				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-			}
-			$spreadsheet = $reader->load($path);
-			$sheetData = $spreadsheet->getActiveSheet()->toArray();
-			$row = 1;
-			$highestRow = count($sheetData); //_e($sheetData);exit;
-			foreach ($sheetData as $worksheet) {
-				if ($row > 1) {
-					if(strtolower($worksheet[4]) == 'hourly') {
-						$worksheet[4] = 'Staff';
-					} else if(strtolower($worksheet[4]) == 'professional') {
-						$worksheet[4] = 'Faculty';
-					} else if(strtolower($worksheet[4]) == 'executives') {
-						$worksheet[4] = 'Research';
-					}
-					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
-					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo='.$worksheet[0].'&portal=8116755942&reqNo=17218&isOnLogoutPage=true';
-					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+		$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/Requisitions.csv'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.xlsx';
+		$arr_file = explode('.', $path);
+		$extension = end($arr_file);
+		if ('csv' == $extension) {
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+		} elseif ('xls' == $extension) {
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+		} else {
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		}
+		$spreadsheet = $reader->load($path);
+		$sheetData = $spreadsheet->getActiveSheet()->toArray();
+		$row = 1;
+		$highestRow = count($sheetData); //_e($sheetData);exit;
+		foreach ($sheetData as $worksheet) {
+			if ($row > 1) {
+				if (strtolower($worksheet[4]) == 'hourly') {
+					$worksheet[4] = 'Staff';
+				} else if (strtolower($worksheet[4]) == 'professional') {
+					$worksheet[4] = 'Faculty';
+				} else if (strtolower($worksheet[4]) == 'executives') {
+					$worksheet[4] = 'Research';
+				}
+				// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
+				$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
+				$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+				if ($checkid && $checkid->slug) {
+					$slug = $checkid->slug;
+				} else {
+					$slug = uniqid(uniqid());
+				}
+				if ($worksheet[0] == strip_tags($worksheet[0])) {
+
 					// HasBeenApproved => $worksheet[5]
 					$insertData = [
-						'requisition_id' => $worksheet[0], //RequisitionNumber - 0
-						'requisition_title' => $worksheet[2], //RequisitionDescription - 1
-						'description_value' => $worksheet[3], //JobInfoLongDescription - 3
+						'requisition_id' => $worksheet[0], //RequisitionNumber
+						'requisition_title' => $worksheet[2], //RequisitionTitle
+						'description_value' => $worksheet[1], //RequisitionDescription
 						'date_posted' => $worksheet[6], //TargetStartDate
-						'status_details' => $worksheet[8],
-						'project_code' => $worksheet[9],
-						'project_auth_name' => $worksheet[10],
-						'project_auth_email' => $worksheet[11],
-						'project_manager_name' => $worksheet[13],
-						'project_manager_email' => $worksheet[14],
+						'status_details' => $worksheet[8], //StatusDetails
+						'project_code' => $worksheet[9], //PROJECTCODE
+						'project_auth_name' => $worksheet[10], //PROJECTAUTHORIZER
+						'project_auth_email' => $worksheet[11], //PROJECTAUTHORIZEREMAIL
+						'project_manager_name' => $worksheet[13], //PROJECTMANAGER
+						'project_manager_email' => $worksheet[14], //PROJECTMANAGEREMAIL
 						'descriptions' => $worksheet[16], //DescriptionExternalHTML
 						'closing_date' => $worksheet[18], //COMPLETION_DATE
-						'hiring_manager_name' => $worksheet[19] . ' ' . $worksheet[20],
-						'hiring_manager_email' => $worksheet[22],
-						'recruiter_name' => $worksheet[23] . ' ' . $worksheet[24],
-						'recruiter_email' => $worksheet[25],
+						'hiring_manager_name' => $worksheet[19] . ' ' . $worksheet[20], //HiringManagerFirstName + HiringManagerLastName
+						'hiring_manager_email' => $worksheet[22], //HiringManagerEmail
+						'recruiter_name' => $worksheet[23] . ' ' . $worksheet[24], //RecruiterFirstName + RecruiterLastName
+						'recruiter_email' => $worksheet[25], //RecruiterEmail
 						'org_name' => $worksheet[28], //Organization
-						'sector_name' => $worksheet[29],
-						'division_name' => $worksheet[30],
-						'dept_name' => $worksheet[31],
+						'sector_name' => $worksheet[29], //Sector
+						'division_name' => $worksheet[30], //Division
+						'dept_name' => $worksheet[31], //Department
 						'apply_link' => $apply_link,
 						'publish' => '',
-						'slug' => uniqid(uniqid()),
-						'category' => $worksheet[4],
+						'slug' => $slug,
+						'category' => $worksheet[4], //Category
 						'college' => (strpos(strtolower($worksheet[31]), 'college') !== false) ? $worksheet[31] : '',
 						'datetime' => date('Y-m-d H:i:s')
 					];
@@ -471,24 +484,25 @@ class Admin extends CI_Controller
 					} else {
 						$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
 					}
-					// _e($insertData);
 				}
-				$row++;
+				// _e($insertData);
 			}
-			if ($inserted) {
-				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
-				exit;
-			} else {
-				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
-				exit;
-			}
+			$row++;
+		}
+		if ($inserted) {
+			echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
+			exit;
+		} else {
+			echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
+			exit;
+		}
 	}
 
 	public function opportunity_temp()
 	{
 		$this->is_login();
 		$data['page'] = 'all-opportunities-temp';
-		$data['opportunities'] = $this->common->getAll(TBL_JOB_TEMP, 'id', 'ASC'); //_e($data['opportunities']);exit;
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish' => '']); //_e($data['opportunities']);exit;
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_temp', $data);
@@ -502,9 +516,19 @@ class Admin extends CI_Controller
 			extract($this->input->post());
 
 			$data_pass = $this->input->post();
+			$data_pass['publish'] = 'published';
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
+			$data_pass['slug'] = $check_temp_req_id->slug;
 			// echo "<pre>"; print_r($data_pass);exit;
-			$this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
-			if ($this->db->trans_status()) {
+			if($check_req_id) {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $data_pass['requisition_id']), $data_pass);
+			} else {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+				$inserted = $this->db->insert(TBL_JOB, $data_pass);
+			}
+			if ($inserted) {
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
@@ -518,5 +542,4 @@ class Admin extends CI_Controller
 		$this->load->view('edit-opportunity-new', $data);
 		$this->load->view('elements/footer', $data);
 	}
-
 }
