@@ -263,18 +263,40 @@ class Admin extends CI_Controller
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 			}
 			if ($updated) {
-				$message_data = 'Hello how are you?';
-				$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
-				$message = $result_message;
-				$to_email = 'codershinobi@gmail.com';
-				$this->load->library('email');
-				$this->email->set_newline("\r\n");
-				$this->email->from('no-reply@ku.ac.ae'); // change it to yours
-				$this->email->to($to_email);
-				$this->email->subject('Job Review Session');
-				$this->email->message($message);
-				$this->email->set_mailtype("html");
-				$this->email->send();
+				if($data_pass['category'] == "Staff") {
+					$user_send_data = [
+						['name' => $this->site_config->staff_1, 'email' => $this->site_config->staff_email_1],
+						['name' => $this->site_config->staff_2, 'email' => $this->site_config->staff_email_2]
+					];
+				} else if($data_pass['category'] == "Faculty") {
+					$user_send_data = [
+						['name' => $this->site_config->faculty_1, 'email' => $this->site_config->faculty_email_1],
+						['name' => $this->site_config->faculty_2, 'email' => $this->site_config->faculty_email_2]
+					];
+				} else if($data_pass['category'] == "Research") {
+					$user_send_data = [
+						['name' => $this->site_config->research_1, 'email' => $this->site_config->research_email_1],
+						['name' => $this->site_config->research_2, 'email' => $this->site_config->research_email_2]
+					];
+				}
+				// echo "<pre>"; print_r($user_send_data);exit;
+				$create_link = base_url().'admin-career/edit-opportunity-temp/20';
+				foreach($user_send_data as $user) {
+					$message_data = $this->load->view('email_template', ['url' => $create_link, 'user' => $user], true);
+					$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
+					$message = $result_message;
+					// echo "<pre>"; print_r($message);exit;
+					$to_email = $user['email'];
+					$this->load->library('email');
+					$this->email->set_newline("\r\n");
+					$this->email->from('no-reply@ku.ac.ae'); // change it to yours
+					$this->email->to($to_email);
+					$this->email->subject('Job Review Session');
+					$this->email->message($message);
+					$this->email->set_mailtype("html");
+					$this->email->send();
+				}
+				
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated & send for review.');
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
