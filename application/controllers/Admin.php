@@ -50,7 +50,7 @@ class Admin extends CI_Controller
 	{
 		$this->is_login();
 		if ($this->session->userdata('admin-login') === TRUE) {
-			redirect(ADMIN_URL . '/all-categories', 'refresh');
+			redirect(ADMIN_URL . '/opportunities-temp', 'refresh');
 		}
 		$data['page'] = 'index';
 		$this->load->view('elements/header', $data);
@@ -234,6 +234,90 @@ class Admin extends CI_Controller
 		$this->load->view('elements/footer', $data);
 	}
 
+	public function opportunity_temp()
+	{
+		$this->is_login();
+		$data['page'] = 'all-opportunities-temp';
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish' => '']); //_e($data['opportunities']);exit;
+		$this->load->view('elements/header', $data);
+		$this->load->view('elements/sidebar', $data);
+		$this->load->view('opportunities_temp', $data);
+		$this->load->view('elements/footer', $data);
+	}
+
+	public function edit_opprotunity_temp($id)
+	{
+		$this->is_login();
+		if ($this->input->post()) {
+			extract($this->input->post());
+
+			$data_pass = $this->input->post();
+			// $data_pass['publish'] = 'published';
+			// $check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
+			$data_pass['slug'] = $check_temp_req_id->slug;
+			// echo "<pre>"; print_r($data_pass);exit;
+			if ($check_temp_req_id) {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+			} else {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+			}
+			if ($updated) {
+				$message_data = 'Hello how are you?';
+				$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
+				$message = $result_message;
+				$to_email = 'codershinobi@gmail.com';
+				$this->load->library('email');
+				$this->email->set_newline("\r\n");
+				$this->email->from('no-reply@ku.ac.ae'); // change it to yours
+				$this->email->to($to_email);
+				$this->email->subject('Job Review Session');
+				$this->email->message($message);
+				$this->email->set_mailtype("html");
+				$this->email->send();
+				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated & send for review.');
+			} else {
+				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
+			}
+		}
+		$data['page'] = 'edit-opportunity-temp';
+		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
+		$data['opportunity'] = $this->common->getRowBy(TBL_JOB_TEMP, 'id', $id);
+		$this->load->view('elements/header', $data);
+		$this->load->view('elements/sidebar', $data);
+		$this->load->view('edit-opportunity-new', $data);
+		$this->load->view('elements/footer', $data);
+	}
+
+	public function publish_opportunity()
+	{
+		$this->is_login();
+		if ($this->input->post()) {
+			extract($this->input->post());
+			// echo "<pre>"; print_r($this->input->post());exit;
+			$data_pass = $this->input->post();
+			// $data_pass['publish'] = 'published';
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
+			$data_pass['slug'] = $check_temp_req_id->slug;
+			echo "<pre>";
+			print_r($data_pass);
+			exit;
+			if ($check_req_id) {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $data_pass['requisition_id']), $data_pass);
+			} else {
+				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+				$inserted = $this->db->insert(TBL_JOB, $data_pass);
+			}
+			if ($inserted) {
+				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
+			} else {
+				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
+			}
+		}
+	}
+
 	public function dlt()
 	{
 		$this->is_login();
@@ -246,6 +330,26 @@ class Admin extends CI_Controller
 			}
 		}
 		$this->output->set_content_type('application/json');
+	}
+
+	public function publish_post()
+	{
+		if ($this->input->post()) {
+			$formData = $this->input->post();
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true);
+			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true);
+			unset($get_job_data->id);
+			$get_job_data->publish = 'published';
+			// _e($get_job_data);exit;
+			if ($check_req_id) {
+				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
+			} else {
+				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
+			}
+			echo json_encode(['success' => true]);
+		}
 	}
 
 	public function logout()
@@ -394,26 +498,6 @@ class Admin extends CI_Controller
 	// 	}
 	// }
 
-	public function publish_post()
-	{
-		if ($this->input->post()) {
-			$formData = $this->input->post();
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true);
-			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true);
-			unset($get_job_data->id);
-			$get_job_data->publish = 'published';
-			// _e($get_job_data);exit;
-			if ($check_req_id) {
-				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
-			} else {
-				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
-			}
-			echo json_encode(['success' => true]);
-		}
-	}
-
 	public function data_import()
 	{
 		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
@@ -496,50 +580,5 @@ class Admin extends CI_Controller
 			echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
 			exit;
 		}
-	}
-
-	public function opportunity_temp()
-	{
-		$this->is_login();
-		$data['page'] = 'all-opportunities-temp';
-		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish' => '']); //_e($data['opportunities']);exit;
-		$this->load->view('elements/header', $data);
-		$this->load->view('elements/sidebar', $data);
-		$this->load->view('opportunities_temp', $data);
-		$this->load->view('elements/footer', $data);
-	}
-
-	public function edit_opprotunity_temp($id)
-	{
-		$this->is_login();
-		if ($this->input->post()) {
-			extract($this->input->post());
-
-			$data_pass = $this->input->post();
-			$data_pass['publish'] = 'published';
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
-			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
-			$data_pass['slug'] = $check_temp_req_id->slug;
-			// echo "<pre>"; print_r($data_pass);exit;
-			if($check_req_id) {
-				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
-				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $data_pass['requisition_id']), $data_pass);
-			} else {
-				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
-				$inserted = $this->db->insert(TBL_JOB, $data_pass);
-			}
-			if ($inserted) {
-				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
-			} else {
-				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
-			}
-		}
-		$data['page'] = 'edit-opportunity-temp';
-		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
-		$data['opportunity'] = $this->common->getRowBy(TBL_JOB_TEMP, 'id', $id);
-		$this->load->view('elements/header', $data);
-		$this->load->view('elements/sidebar', $data);
-		$this->load->view('edit-opportunity-new', $data);
-		$this->load->view('elements/footer', $data);
 	}
 }

@@ -29,13 +29,13 @@
         ?>
                 <tr>
                     <td><?php echo $x; ?></td>
-                    <td class="actions">
+                    <td style="width: 5%" class="actions">
                         <a href="<?php echo base_url() . ADMIN_URL; ?>/edit-opportunity-temp/<?php echo $row->id; ?>" class="btn edit"></a>
                         <a href="javascript:void(0)" data-id="<?php echo $row->id; ?>" class="btn dlt"></a>
                     </td>
                     <td><?php echo $row->category; ?></td>
                     <td><?php echo $row->requisition_id; ?></td>
-                    <td><?php echo $row->description_value; ?></td>
+                    <td style="width: 20%;"><?php echo $row->description_value; ?></td>
                     <td><?php echo $row->division_name; ?></td>
                     <td><?php echo $row->dept_name; ?></td>
                     <td><?php echo $row->recruiter_name ?></td>

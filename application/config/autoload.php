@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('database', 'session', 'form_validation', 'upload', 'pagination', 'user_agent', 'email', 'upload', 'zip', 'encryption', 'excel');
+$autoload['libraries'] = array('database', 'session', 'form_validation', 'upload', 'pagination', 'user_agent', 'email', 'upload', 'zip', 'encryption');
 
 /*
 | -------------------------------------------------------------------
@@ -103,7 +103,7 @@ $autoload['helper'] = array('form', 'url', 'html', 'text', 'file', 'string', 'do
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array();
+$autoload['config'] = array('site_config');
 
 /*
 | -------------------------------------------------------------------

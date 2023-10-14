@@ -6,15 +6,16 @@
             <label>Category</label>
             <select class="input-field" name="category" id="category">
                 <option value="">Select Category</option>
-                        <option value="Staff" <?= ($opportunity->category == 'Staff') ? 'selected' : ''; ?>>Staff</option>
-                        <option value="Faculty" <?= ($opportunity->category == 'Faculty') ? 'selected' : ''; ?>>Faculty</option>
-                        <option value="Research" <?= ($opportunity->category == 'Research') ? 'selected' : ''; ?>>Research</option>
+                <option value="Staff" <?= ($opportunity->category == 'Staff') ? 'selected' : ''; ?>>Staff</option>
+                <option value="Faculty" <?= ($opportunity->category == 'Faculty') ? 'selected' : ''; ?>>Faculty</option>
+                <option value="Research" <?= ($opportunity->category == 'Research') ? 'selected' : ''; ?>>Research</option>
+                <option value="Research" <?= ($opportunity->category == 'General Application') ? 'selected' : ''; ?>>General Application</option>
             </select>
         </div>
 
-        <div class="form-group clear" <?= ($opportunity->category != 'Faculty')? 'style="display: none;"' : ''; ?>>
+        <div class="form-group clear" <?= ($opportunity->category != 'Faculty') ? 'style="display: none;"' : ''; ?>>
             <label>College</label>
-            <select class="input-field" name="college" id="college" <?= ($opportunity->category != 'Faculty')? 'disabled' : ''; ?>>
+            <select class="input-field" name="college" id="college" <?= ($opportunity->category != 'Faculty') ? 'disabled' : ''; ?>>
                 <option value="">Select College</option>
                 <option value="College of Engineering" <?= ($opportunity->college == 'College of Engineering') ? 'selected' : ''; ?>>College of Engineering</option>
                 <option value="College of Arts and Science" <?= ($opportunity->college == 'College of Arts and Science') ? 'selected' : ''; ?>>College of Arts and Science</option>
@@ -23,12 +24,12 @@
         </div>
 
         <div class="form-group clear">
-            <label>Requisition Id</label>
-            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" />
+            <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" required />
         </div>
         <div class="form-group clear">
-            <label>Position Title</label>
-            <input class="input-field" type="text" name="description_value" value="<?= $opportunity->description_value ?>" />
+            <label>Position Title <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="description_value" value="<?= $opportunity->description_value ?>" required />
         </div>
         <div class="form-group clear">
             <label>Position type</label>
@@ -55,7 +56,7 @@
             <input class="input-field" type="text" name="sector_name" value="<?= $opportunity->sector_name ?>" />
         </div>
         <div class="form-group clear">
-            <label>Division Name</label>
+            <label>Division Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
             <input class="input-field" type="text" name="division_name" value="<?= $opportunity->division_name ?>" />
         </div>
         <div class="form-group clear">
@@ -71,12 +72,12 @@
             <input class="input-field" type="email" name="recruiter_email" value="<?= $opportunity->recruiter_email ?>" />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Name</label>
-            <input class="input-field" type="text" name="hiring_manager_name" value="<?= $opportunity->hiring_manager_name ?>" />
+            <label>Hiring Manager Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="hiring_manager_name" value="<?= $opportunity->hiring_manager_name ?>" required />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Email</label>
-            <input class="input-field" type="email" name="hiring_manager_email" value="<?= $opportunity->hiring_manager_email ?>" />
+            <label>Hiring Manager Email <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="email" name="hiring_manager_email" value="<?= $opportunity->hiring_manager_email ?>" required />
         </div>
         <div class="form-group clear">
             <label>Apply Link</label>
@@ -107,12 +108,16 @@
             <input class="input-field" type="text" name="project_auth_name" value="<?= $opportunity->project_auth_name ?>" />
         </div>
         <div class="form-group clear">
-            <label>Closing Date</label>
-            <input class="input-field" type="text" name="closing_date" value="<?= $opportunity->closing_date ?>" />
+            <label>Closing Date <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="closing_date" value="<?= $opportunity->closing_date ?>" required />
         </div>
         <div class="form-group clear">
             <label>Status Details</label>
             <input class="input-field" type="text" name="status_details" value="<?= $opportunity->status_details ?>" />
+        </div>
+        <div class="form-group clear">
+            <label>Years of Experience <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="years_of_experience" value="<?= $opportunity->years_of_experience ?>" required />
         </div>
 
         <div class="form-group clear">
@@ -133,7 +138,8 @@
 
         <div class="form-group clear">
             <label></label>
-            <input type="submit" value="Update Job" class="common-button" />
+            <input type="submit" value="Update Job" class="common-button" id="submit-btn" />&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" value="Publish" class="common-button" id="publish-btn" />
         </div>
         </form>
     </div>
@@ -142,14 +148,14 @@
 <script>
     CKEDITOR.replace('descriptions', {
         plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
-    }).on('required', function (evt) {
+    }).on('required', function(evt) {
         $('#error1').fadeIn();
         evt.cancel();
     });
 
     CKEDITOR.replace('qualifications', {
         plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
-    }).on('required', function (evt) {
+    }).on('required', function(evt) {
         $('#error1').fadeIn();
         evt.cancel();
     });
@@ -158,15 +164,16 @@
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 $('#img_pre').attr('src', e.target.result).css('opacity', 1);
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    $("#category").on("change", function () {
-        var valueSelected = this.value; console.log(valueSelected)
+    $("#category").on("change", function() {
+        var valueSelected = this.value;
+        console.log(valueSelected)
         if (valueSelected == 'Faculty') {
             $('#college').attr('disabled', false);
             $('#college').closest('.form-group').css('display', 'block');
@@ -176,36 +183,39 @@
         }
     });
 
-    $("#img_input").change(function () {
-        readURL(this);
-    });
+    // $('#publish-btn').click(function() {
+    //     let id = <?= $opportunity->id ?>;
+    //     var formData = $('#form')[0];
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "<?= base_url() . ADMIN_URL . '/publish-opportunity' ?>",
+    //         dataType: "json",
+    //         data: {
+    //             id: id,
+    //             'formData': formData
+    //         }
+    //     }).done(function(msg) {
+    //         $(".publish-btn[data-id='" + id + "']").replaceWith('<span>Published</span>');
+    //         $(".table").load(location.href + " .table");
+    //     });
+    // });
 
-    $(document).on("click", ".close", function () {
-        $(this).closest('.form-group').remove();
-        var data_id = $(this).closest('.form-group').attr("data-id");
-        editor = 'editor' + data_id;
-        CKEDITOR.instances[editor].destroy();
-    });
+    $('#publish-btn').on('click', function() {
+        let id = <?= $opportunity->id ?>;
+        var fd = $('#form').serializeArray();
+        fd.push({name: 'id', value: id});
 
-    $('#add-more').on('click', function (e) {
-        e.preventDefault();
-        var m = $('.existing-fields .form-group').length - 1;
-        var n = m + ($('.add-more-fields .form-group').length + 1);
-        var html_row = '<div class="form-group clear" data-id="' + n + '" >' +
-                '<label><input type="text" class="input-field editor-field editor-field' + n + '" name="editor_heading[]" placeholder="Enter heading" required /></label>' +
-                '<div class="ck-textarea">' +
-                '<textarea class="input-field" name="editor_details[]" id="editor' + n + '" rows="10" cols="10" required></textarea>' +
-                '<span class="ck-error" id="error' + n + '">This field is required</span>' +
-                '<span class="close">Close</span>' +
-                '</div>' +
-                '</div>';
-        $('.add-more-fields').append(html_row);
-        CKEDITOR.replace('editor' + n, {
-            plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
-        }).on('required', function (evt) {
-            $('#error' + n).fadeIn();
-            evt.cancel();
+        $.ajax({
+            method: "POST",
+            url: "<?= base_url() . ADMIN_URL . '/publish-opportunity' ?>",
+            data: fd,
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+            }
         });
-        return false;
     });
 </script>

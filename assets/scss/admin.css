@@ -709,7 +709,7 @@ button:not(:disabled),
     background: #fff;
     display: block;
     width: max-content;
-        max-width: 100%;
+    max-width: 100%;
     text-align: center;
     pointer-events: none;
     z-index: 20;
@@ -798,4 +798,12 @@ button:not(:disabled),
     100% {
         transform: rotate(360deg);
     }
+}
+
+.text-danger {
+    color: red;
+}
+
+.text-bold {
+    font-weight: bold;
 }

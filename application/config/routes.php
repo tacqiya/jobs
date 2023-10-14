@@ -26,3 +26,5 @@ $route[ADMIN_URL . '/publish-job'] = 'admin/publish_post';
 $route[ADMIN_URL . '/data-import'] = 'admin/data_import';
 $route[ADMIN_URL .'/opportunities-temp'] = 'admin/opportunity_temp';
 $route[ADMIN_URL .'/edit-opportunity-temp/(:num)'] = 'admin/edit_opprotunity_temp/$1';
+
+$route[ADMIN_URL .'/publish-opportunity'] = 'admin/publish_opportunity';
