@@ -19,7 +19,7 @@ class Admin extends CI_Controller
 	{
 		$this->form_validation->set_rules('username', 'Username', 'required');
 		$this->form_validation->set_rules('password', 'Password', 'required');
-
+		
 		if ($this->input->post()) {
 			if ($this->form_validation->run() === TRUE) {
 				$name = $this->input->post('username');
@@ -27,7 +27,11 @@ class Admin extends CI_Controller
 				$query = $this->common->getRowByMulty(TBL_LOGIN, array('username' => $name, 'password' => $pass));
 				if (!empty($query->id)) {
 					$this->session->set_userdata('admin-login', TRUE);
-					redirect(ADMIN_URL . '/dashboard', 'refresh');
+					if($this->session->userdata('stored_redirect_url')) {
+						redirect($this->session->userdata('stored_redirect_url'), 'refresh');
+					} else {
+						redirect(ADMIN_URL . '/dashboard', 'refresh');
+					}
 				} else {
 					$data['results'] = '<div class="error">Login Failed! Username or Password does not match.</div>';
 				}
@@ -41,7 +45,9 @@ class Admin extends CI_Controller
 
 	public function is_login()
 	{
+		$this->session->unset_userdata('stored_redirect_url');
 		if ($this->session->userdata('admin-login') !== TRUE) {
+			$this->session->set_userdata('stored_redirect_url', current_url());
 			redirect(LOGIN_URL, 'refresh');
 		}
 	}
