@@ -1,0 +1,25 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+/*
+    Created on : Sep 1, 2022, 4:03:57 PM
+    Author     : Jazim Max
+*/
+@media screen and (max-width: 900px) {
+  #career-home .link_blks {
+    margin-left: -25px; }
+    #career-home .link_blks .blk {
+      width: calc((100% / 2) - 25px);
+      margin-left: 25px;
+      margin-bottom: 25px; }
+      #career-home .link_blks .blk:hover h3 {
+        font-size: 18px;
+        background: none;
+        bottom: 50%;
+        transform: translateY(50%); } }
+@media screen and (max-width: 500px) {
+  #career-home .link_blks .blk {
+    width: calc((100%) - 25px); } }
+
+/*# sourceMappingURL=home-res.css.map */

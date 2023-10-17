@@ -1,0 +1,138 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+/*
+    Created on : Aug 22, 2022, 4:09:09 PM
+    Author     : Jazim Max
+*/
+@import 'style';
+
+#e_benefits{
+    .contractual_section{
+        h2{
+            font-size: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #001b48;
+        }
+
+        .blks{
+            margin-top:30px;
+            .blk{
+                padding-left: 100px;
+                min-height: 78px;
+
+                h4{
+                    color:$sub-color;
+                    font-weight: bold;
+                    text-transform:uppercase;
+                }
+                p{
+                    line-height: 20px;
+                }
+            }
+
+            .staff{
+                background : url(../../img/careers/staff.png) no-repeat center left;
+            }
+
+            .faculty{
+                background : url(../../img/careers/faculty.png) no-repeat center left;
+            }
+
+            .research{
+                background : url(../../img/careers/research.png) no-repeat center left;
+                padding-top: 10px;
+            }
+
+            .dbl_blk{
+                margin-bottom: 30px;
+                margin-left: -30px;
+                .blk{
+                    float: left;
+                    width: calc((100% / 2) - 30px);
+                    margin-left: 30px;
+                }
+            }
+        }
+
+        hr{
+            margin: 50px 0px;
+            background: $sub-color;
+            height: 2px;
+        }
+    }
+
+    .employee_section{
+        h2{
+            font-size: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #001b48;
+            margin-top: -9px;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 30px 0px 35px 0px;
+            li{
+                padding-left:30px;
+                background: url(../../img/careers/list_icon.png) no-repeat left 1px;
+                margin:10px 0px;
+                line-height:20px;
+                margin-bottom:15px;
+
+                &:last-child{
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        .blks{
+            margin-top:30px;
+            .blk{
+                padding-left: 100px;
+                min-height: 78px;
+
+                h4{
+                    color:$sub-color;
+                    font-weight: bold;
+                    text-transform:uppercase;
+                }
+                p{
+                    line-height: 20px;
+                }
+            }
+
+            .staff{
+                background : url(../../img/careers/staff.png) no-repeat center left;
+            }
+
+            .faculty{
+                background : url(../../img/careers/faculty.png) no-repeat center left;
+            }
+
+            .research{
+                background : url(../../img/careers/research.png) no-repeat center left;
+                padding-top: 10px;
+            }
+
+            .dbl_blk{
+                margin-bottom: 30px;
+                margin-left: -30px;
+                .blk{
+                    float: left;
+                    width: calc((100% / 2) - 30px);
+                    margin-left: 30px;
+                }
+            }
+        }
+    }
+
+    @media screen and (min-width: 900px){
+        p{
+            width: 70%;
+        }
+    }
+}

@@ -1,0 +1,72 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+/*
+    Created on : Sep 1, 2022, 4:07:14 PM
+    Author     : Jazim Max
+*/
+@media screen and (max-width: 900px) {
+  #information .steps {
+    position: relative; }
+    #information .steps:before {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: calc(100% - 50px);
+      background: #06a2c4;
+      bottom: 0px;
+      left: 14px; }
+    #information .steps .blks:first-child {
+      margin-top: -20px; }
+    #information .steps .blks .blk {
+      padding: 0px 80px;
+      padding-right: 0px;
+      width: 100%;
+      min-height: 55px;
+      margin-top: 20px;
+      background: url(../../../img/careers/step_right.png) no-repeat;
+      background-position: left top;
+      background-size: 30px;
+      padding-left: 45px; }
+      #information .steps .blks .blk:last-child:after {
+        display: none; }
+      #information .steps .blks .blk:last-child:before {
+        display: none; }
+    #information .steps .blks_1 {
+      padding-right: 0; }
+      #information .steps .blks_1:before {
+        display: none; }
+    #information .steps .blks_2 {
+      padding-left: 0;
+      display: flex;
+      flex-direction: column-reverse; }
+      #information .steps .blks_2:before {
+        display: none; }
+      #information .steps .blks_2 .blk:first-child:after {
+        display: none; }
+      #information .steps .blks_2 .blk:first-child:before {
+        display: none; }
+    #information .steps .blks_3 {
+      padding-left: 0; }
+      #information .steps .blks_3:before {
+        display: none; }
+      #information .steps .blks_3 .blk:last-child {
+        background: url(../../../img/careers/step_right.png) no-repeat #fff;
+        background-position: left top;
+        background-size: 30px;
+        padding-left: 45px; } }
+@media screen and (max-width: 700px) {
+  #information .onbording .dbl_blk .left_blk {
+    width: 100%;
+    padding: 10px; }
+    #information .onbording .dbl_blk .left_blk h3 {
+      margin-top: 0; }
+  #information .onbording .dbl_blk .right_blk {
+    width: 100%;
+    padding: 30px 10px; }
+  #information .third_blk .dbl_blk .inner {
+    width: 100%;
+    padding-right: 0; } }
+
+/*# sourceMappingURL=information_for_application-res.css.map */

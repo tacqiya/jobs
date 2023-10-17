@@ -1,0 +1,823 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+
+
+/*
+    Created on : Aug 22, 2022, 4:08:44 PM
+    Author     : Jazim Max
+*/
+
+@import 'style';
+#c-opportunities {
+    .search_section {
+        padding: 30px;
+        background: $main-color;
+        .left_blk {
+            width: 136px;
+            float: left;
+            margin-right: 30px;
+            h3 {
+                padding: 10px 0px;
+                color: #fff;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+        }
+        .right_blk {
+            width: calc(100% - 166px);
+            float: left;
+            input {
+                width: calc(100% - 140px);
+                float: left;
+                height: 39px;
+                outline: none;
+                cursor: pointer;
+                padding: 0 15px;
+            }
+            #search {
+                cursor: text;
+            }
+            #job-search-btn {
+                width: 130px;
+                float: left;
+                margin-left: 10px;
+                padding: 10px 20px;
+                text-align: center;
+                background: $sub-color;
+                color: #fff;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+        }
+    }
+    .blockser_sub {
+        position: relative;
+        display: inline-block;
+        display: none;
+        &:hover {
+            .dropdown-content {
+                display: block;
+            }
+        }
+        .dropbtn {
+            width: 100%;
+            padding: 15px 15px;
+            float: left;
+            text-align: left;
+            position: relative;
+            background: url(../../img/careers/drop_down.png) no-repeat 97% center $sub-color;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            background-size: 27px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            top: 48px;
+            width: 100%;
+            background: $sub-color;
+            color: #fff;
+            .active {
+                background: $main-color;
+            }
+            span {
+                color: #fff;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                transition: .4s all;
+                border-top: 1px solid $main-color;
+                cursor: pointer;
+                &:hover {
+                    background: $main-color;
+                }
+            }
+        }
+    }
+    .menu_section_sub {
+        position: relative;
+        display: inline-block;
+        display: none;
+        &:hover {
+            .dropdown-content {
+                display: block;
+            }
+        }
+        .dropbtn {
+            width: 100%;
+            padding: 15px 15px;
+            float: left;
+            text-align: left;
+            position: relative;
+            background: url(../../img/careers/drop_down.png) no-repeat 97% center $sub-color;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            background-size: 27px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            top: 48px;
+            width: 100%;
+            background: $sub-color;
+            color: #fff;
+            .active {
+                background: $main-color;
+            }
+            a {
+                color: #fff;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                transition: .4s all;
+                border-top: 1px solid $main-color;
+                &:hover {
+                    background: $main-color;
+                }
+            }
+        }
+    }
+    .menu_section {
+        margin-top: 20px;
+        .blks {
+            .blk {
+                width: calc(100% / 4);
+                padding: 15px 0px;
+                float: left;
+                text-align: center;
+                position: relative;
+                background: $sub-color;
+                color: #fff;
+                text-transform: uppercase;
+                font-weight: 600;
+                letter-spacing: 1px;
+                &:after {
+                    content: '';
+                    position: absolute;
+                    height: 30%;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0px;
+                    width: 1px;
+                    background: #fff;
+                }
+                &:first-child {
+                    &:after {
+                        display: none;
+                    }
+                }
+            }
+            .active {
+                background: $main-color;
+                &:after {
+                    display: none;
+                }
+            }
+            .blk.menu_item.remove {
+                &:after {
+                    display: none;
+                }
+            }
+        }
+    }
+    .content_section {
+        .content {
+            display: none;
+            .blks {
+                .blk {
+                    h3 {
+                        color: $main-color;
+                        text-transform: uppercase;
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                    .department {
+                        margin-top: 0px;
+                        color: #898484;
+                        text-transform: capitalize;
+                    }
+                    p {
+                        margin-bottom: 30px;
+                    }
+                    .details {
+                        margin-bottom: 35px;
+                        ul {
+                            li {
+                                float: left;
+                                padding: 0px 15px;
+                                position: relative;
+                                &:last-child {
+                                    padding-right: 0;
+                                }
+                                &:after {
+                                    content: '';
+                                    position: absolute;
+                                    height: 80%;
+                                    width: 2px;
+                                    top: 50%;
+                                    left: 0;
+                                    transform: translateY(-50%);
+                                    background: #000;
+                                }
+                                &:first-child {
+                                    padding-left: 0px;
+                                    &:after {
+                                        display: none;
+                                    }
+                                }
+                                h4 {
+                                    text-transform: uppercase;
+                                    font-weight: bold;
+                                }
+                                h5 {
+                                    text-transform: uppercase;
+                                }
+                            }
+                        }
+                    }
+                    a {
+                        padding: 6px 15px;
+                        text-transform: uppercase;
+                        font-weight: bold;
+                        color: $main-color;
+                        border: 2px solid $sub-color;
+                        display: block;
+                        width: 158px;
+                        transition: .4s all;
+                        &:hover {
+                            background: $sub-color;
+                            color: #fff;
+                        }
+                    }
+                    hr {
+                        margin: 30px 0px;
+                        background: $sub-color;
+                        height: 2px;
+                    }
+                    &:last-child {
+                        hr {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+        .content-1 {
+            display: block;
+        }
+        #Faculty {
+            // display: block;
+        }
+    }
+    .pagination_section {
+        margin-top: 50px;
+        position: relative;
+        h3 {
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 141px;
+            span {
+                font-weight: bold;
+            }
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            .paginationjs {
+                .paginationjs-pages {
+                    ul {
+                        .paginationjs-page {
+                            width: 37px;
+                            line-height: 35px;
+                            text-align: center;
+                            display: inline-block;
+                            text-decoration: none;
+                            color: #000;
+                            border-radius: 50%;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin-left: 5px;
+                            &.active {
+                                background-color: #19bec4;
+                                color: #fff;
+                                cursor: default;
+                                a {
+                                    cursor: default;
+                                }
+                            }
+                            a {}
+                        }
+                        .paginationjs-next {
+                            width: 37px;
+                            line-height: 35px;
+                            text-align: center;
+                            /* border: 1px solid #000; */
+                            display: inline-block;
+                            text-decoration: none;
+                            color: #fff0;
+                            border-radius: 50%;
+                            font-weight: bold;
+                            background: url(../../img/careers/next_bl.png) no-repeat center center #fff;
+                            background-size: 7px;
+                            border-radius: 0px !important;
+                            border: 1px solid #000;
+                            margin-left: 5px;
+                            cursor: pointer;
+                            &:hover {
+                                background: url(../../img/careers/next_wt.png) no-repeat center center #19bec4;
+                                background-size: 7px;
+                            }
+                            a {}
+                        }
+                        .paginationjs-prev {
+                            width: 37px;
+                            line-height: 35px;
+                            text-align: center;
+                            /* border: 1px solid #000; */
+                            display: inline-block;
+                            text-decoration: none;
+                            color: #fff0;
+                            border-radius: 50%;
+                            font-weight: bold;
+                            background: url(../../img/careers/prev_bl.png) no-repeat center center #fff;
+                            background-size: 7px;
+                            border-radius: 0px !important;
+                            border: 1px solid #000;
+                            cursor: pointer;
+                            &:hover {
+                                background: url(../../img/careers/prev_wt.png) no-repeat center center #19bec4;
+                                background-size: 7px;
+                            }
+                            a {}
+                        }
+                    }
+                }
+            }
+        }
+        // .pagination {
+        //     display: flex;
+        //     justify-content: center;
+        //     .page-item {
+        //         width: 37px;
+        //         line-height: 35px;
+        //         text-align: center;
+        //         /*border: 1px solid #000;*/
+        //         display: inline-block;
+        //         text-decoration: none;
+        //         color: #000;
+        //         border-radius: 50%;
+        //         font-weight: bold;
+        //         cursor: pointer;
+        //         &:not(:first-child) {
+        //             margin-left: 5px;
+        //         }
+        //         &.disabled {
+        //             background-color: #19bec4;
+        //             color: #fff;
+        //         }
+        //         &.prev {
+        //             border-radius: 0px !important;
+        //             border: 2px solid #000;
+        //             background-color: #fff;
+        //             color: #000;
+        //         }
+        //         &.next {
+        //             border-radius: 0px !important;
+        //             border: 2px solid #000;
+        //             background-color: #fff;
+        //             color: #000;
+        //         }
+        //         &:hover {
+        //             background-color: #19bec4;
+        //             color: #fff;
+        //         }
+        //         &.page-inf {
+        //             background-color: #fff;
+        //             color: #000;
+        //             &:hover {
+        //                 pointer-events: none;
+        //             }
+        //         }
+        //     }
+        // }
+        .blocks {
+            width: 37px;
+            line-height: 35px;
+            text-align: center;
+            /*border: 1px solid #000;*/
+            display: inline-block;
+            text-decoration: none;
+            color: #000;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        .blocks:not(:first-child) {
+            margin-left: 5px;
+        }
+        .blocks:first-child {
+            border-radius: 0px !important;
+            border: 2px solid #000;
+        }
+        .blocks:last-child {
+            border-radius: 0px !important;
+            border: 2px solid #000;
+        }
+        .blocks:hover {
+            background-color: #19bec4;
+            color: #fff;
+        }
+        #pagination a.active {
+            background-color: #19bec4;
+            color: #fff;
+        }
+    }
+    @media screen and (min-width: 900px) {
+        p {
+            width: 70%;
+        }
+    }
+}
+
+#c-opportunities-sub {
+    ul {
+        list-style-type: none;
+        li {
+            padding-left: 30px;
+            background: url(../../img/careers/list_icon.png) no-repeat left 1px;
+            margin: 10px 0px;
+            line-height: 20px;
+            margin-bottom: 15px;
+            list-style: none;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    h2 {
+        font-size: 25px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #001b48;
+    }
+    h3 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+    .first_blk {
+        .blks {
+            .blk {
+                border: 1px solid $sub-color;
+                margin-bottom: 10px;
+                .left_blk {
+                    float: left;
+                    width: 200px;
+                    padding: 10px;
+                    color: #fff;
+                    font-weight: bold;
+                    background: $sub-color;
+                }
+                .right_blk {
+                    float: left;
+                    width: calc(100% - 200px);
+                    p {
+                        margin: 0px 0px;
+                        line-height: 16px;
+                        padding: 10px;
+                    }
+                }
+            }
+            @media screen and (min-width: 900px) {
+                .blk {
+                    width: 70%;
+                }
+            }
+        }
+    }
+    .dbl_blk {
+        margin-left: -30px;
+        a {
+            float: left;
+            width: calc((100% / 2) - 30px);
+            margin-left: 30px;
+            text-align: center;
+            padding: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .left_blk {
+            background: $main-color;
+            transition: .4s all;
+            &:hover {
+                background: #01122e;
+            }
+        }
+        .right_blk {
+            background: $sub-color;
+            transition: .4s all;
+            &:hover {
+                background: #0084a1;
+            }
+        }
+    }
+    @media screen and (min-width: 900px) {
+        p {
+            width: 70%;
+        }
+    }
+}
+
+.not-found {
+    color: #001b48;
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0 0 25px;
+    text-align: center;
+}
+
+.faculty {
+    .blockser {
+        width: 250px;
+        background: #e5e8ec;
+        padding: 30px;
+        float: left;
+        .blk-sec {
+            padding-left: 50px;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            margin: 20px 0px;
+            transition: .3s all;
+            position: relative;
+            &:hover {
+                color: $sub-color;
+            }
+            &:after {
+                position: absolute;
+                content: '';
+                height: 1px;
+                width: 100%;
+                background: #000;
+                bottom: -20px;
+                left: 0;
+            }
+            &:first-child {
+                margin-top: 0;
+                background: url(../../img/careers/college_icon_1.png) no-repeat top left;
+            }
+            &:nth-child(2) {
+                background: url(../../img/careers/college_icon_2.png) no-repeat top left;
+            }
+            &:last-child {
+                margin-bottom: 0;
+                background: url(../../img/careers/college_icon_3.png) no-repeat top left;
+                &:after {
+                    display: none;
+                }
+            }
+        }
+        .active {
+            color: $sub-color;
+            ;
+        }
+    }
+    .inside-blk {
+        float: left;
+        width: calc(100% - 250px);
+        padding-left: 50px;
+    }
+}
+
+.content_section {
+    .content {
+        .inside-blk {
+            .blockers {
+                .blk {
+                    h3 {
+                        color: $main-color;
+                        text-transform: uppercase;
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                    .department {
+                        margin-top: 0px;
+                        color: #898484;
+                        text-transform: capitalize;
+                    }
+                    p {
+                        margin-bottom: 30px;
+                    }
+                    .details {
+                        margin-bottom: 35px;
+                        ul {
+                            li {
+                                float: left;
+                                padding: 0px 15px;
+                                position: relative;
+                                &:last-child {
+                                    padding-right: 0;
+                                }
+                                &:after {
+                                    content: '';
+                                    position: absolute;
+                                    height: 80%;
+                                    width: 2px;
+                                    top: 50%;
+                                    left: 0;
+                                    transform: translateY(-50%);
+                                    background: #000;
+                                }
+                                &:first-child {
+                                    padding-left: 0px;
+                                    &:after {
+                                        display: none;
+                                    }
+                                }
+                                h4 {
+                                    text-transform: uppercase;
+                                    font-weight: bold;
+                                }
+                                h5 {
+                                    text-transform: uppercase;
+                                }
+                            }
+                        }
+                    }
+                    a {
+                        padding: 6px 15px;
+                        text-transform: uppercase;
+                        font-weight: bold;
+                        color: $main-color;
+                        border: 2px solid $sub-color;
+                        display: block;
+                        width: 158px;
+                        transition: .4s all;
+                        &:hover {
+                            background: $sub-color;
+                            color: #fff;
+                        }
+                    }
+                    hr {
+                        margin: 30px 0px;
+                        background: $sub-color;
+                        height: 2px;
+                    }
+                    &:last-child {
+                        hr {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.pagination_sec {
+    // margin-top: 50px;
+    position: relative;
+    h3 {
+        /*        position: absolute;*/
+        left: 0;
+        margin-top: 50px;
+        width: 141px;
+        span {
+            font-weight: bold;
+        }
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        .paginationjs {
+            .paginationjs-pages {
+                ul {
+                    .paginationjs-page {
+                        width: 37px;
+                        line-height: 35px;
+                        text-align: center;
+                        display: inline-block;
+                        text-decoration: none;
+                        color: #000;
+                        border-radius: 50%;
+                        font-weight: bold;
+                        cursor: pointer;
+                        margin-left: 5px;
+                        &.active {
+                            background-color: #19bec4;
+                            color: #fff;
+                            cursor: default;
+                            a {
+                                cursor: default;
+                            }
+                        }
+                        a {}
+                    }
+                    .paginationjs-next {
+                        width: 37px;
+                        line-height: 35px;
+                        text-align: center;
+                        /* border: 1px solid #000; */
+                        display: inline-block;
+                        text-decoration: none;
+                        color: #fff0;
+                        border-radius: 50%;
+                        font-weight: bold;
+                        background: url(../../img/careers/next_bl.png) no-repeat center center #fff;
+                        background-size: 7px;
+                        border-radius: 0px !important;
+                        border: 1px solid #000;
+                        margin-left: 5px;
+                        cursor: pointer;
+                        &:hover {
+                            background: url(../../img/careers/next_wt.png) no-repeat center center #19bec4;
+                            background-size: 7px;
+                        }
+                        a {}
+                    }
+                    .paginationjs-prev {
+                        width: 37px;
+                        line-height: 35px;
+                        text-align: center;
+                        /* border: 1px solid #000; */
+                        display: inline-block;
+                        text-decoration: none;
+                        color: #fff0;
+                        border-radius: 50%;
+                        font-weight: bold;
+                        background: url(../../img/careers/prev_bl.png) no-repeat center center #fff;
+                        background-size: 7px;
+                        border-radius: 0px !important;
+                        border: 1px solid #000;
+                        cursor: pointer;
+                        &:hover {
+                            background: url(../../img/careers/prev_wt.png) no-repeat center center #19bec4;
+                            background-size: 7px;
+                        }
+                        a {}
+                    }
+                }
+            }
+        }
+    }
+    .blocks {
+        width: 37px;
+        line-height: 35px;
+        text-align: center;
+        /*border: 1px solid #000;*/
+        display: inline-block;
+        text-decoration: none;
+        color: #000;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+    .blocks:not(:first-child) {
+        margin-left: 5px;
+    }
+    .blocks:first-child {
+        border-radius: 0px !important;
+        border: 2px solid #000;
+    }
+    .blocks:last-child {
+        border-radius: 0px !important;
+        border: 2px solid #000;
+    }
+    .blocks:hover {
+        background-color: #19bec4;
+        color: #fff;
+    }
+    #pagination a.active {
+        background-color: #19bec4;
+        color: #fff;
+    }
+}
+
+.inside-blk {
+    display: none;
+}
+
+.inside-blk-1 {
+    display: block;
+}
+
+@media screen and (min-width: 900px) {
+    #c-opportunities-sub .position_over {
+        width: 70%;
+    }
+}

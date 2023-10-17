@@ -1,0 +1,114 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+
+
+/*
+    Created on : Sep 1, 2022, 4:02:55 PM
+    Author     : Jazim Max
+*/
+
+@media screen and (max-width: 850px) {
+    #c-opportunities {
+        .menu_section {
+            .blks {
+                margin-left: -5px;
+                .blk {
+                    width: calc((100% / 2) - 5px);
+                    margin-left: 5px;
+                    margin-bottom: 5px;
+                    &:after {
+                        display: none;
+                    }
+                }
+            }
+        }
+        .search_section {
+            .left_blk {
+                display: none;
+            }
+            .right_blk {
+                width: 100%;
+            }
+        }
+        
+        .faculty .blockser{
+            display: none;
+        }
+        
+        .blockser_sub{
+            display: block;
+        }
+        
+        .faculty .inside-blk{
+            width: 100%;
+            padding-left: 0;
+        }
+    }
+}
+
+@media screen and (max-width: 800px) {
+    #c-opportunities {
+        .pagination_section {
+            margin-bottom: 30px;
+            h3 {
+                position: unset;
+                text-align: center;
+                width: auto;
+                margin-bottom: 20px;
+                // left: 50%;
+                // transform: translateX(-50%);
+                // top: 54px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #c-opportunities {
+        .menu_section {
+            display: none;
+        }
+        .menu_section_sub {
+            display: block;
+        }
+    }
+    #c-opportunities-sub {
+        .first_blk {
+            .blks {
+                .blk {
+                    .left_blk {
+                        width: 100%;
+                    }
+                    .right_blk {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+        .dbl_blk {
+            margin-left: 0;
+            a {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #c-opportunities .search_section {
+        padding: 15px;
+        .right_blk {
+            input {
+                width: 100%;
+                margin-bottom: 1px;
+            }
+            a {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    }
+}

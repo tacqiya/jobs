@@ -1,0 +1,302 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+
+
+/*
+    Created on : Aug 22, 2022, 5:21:06 PM
+    Author     : Jazim Max
+*/
+
+@import 'style';
+#information {
+    h2 {
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .steps {
+        .blks {
+            padding: 0px;
+            /*            &:first-child{
+                            padding: 0px 0px;
+                            padding-bottom: 60px;
+                        }*/
+            .blk {
+                width: calc((100% / 3));
+                /*margin-left: 15px;*/
+                float: left;
+                padding: 60px 0px;
+                padding-right: 50px;
+                h4 {
+                    font-weight: bold;
+                    color: $sub-color;
+                    margin-bottom: 10px;
+                }
+                p {
+                    margin: 0;
+                    line-height: 20px;
+                    color: #6c6c6c;
+                    &:last-child {
+                        margin-top: 10px;
+                    }
+                }
+            }
+        }
+        .blks_1 {
+            position: relative;
+            padding-right: 70px;
+            &:before {
+                content: '';
+                position: absolute;
+                width: calc(100% - 80px);
+                height: 3px;
+                background: $sub-color;
+                top: 25px;
+                right: 25px;
+                z-index: -1;
+            }
+            .blk {
+                &:last-child {
+                    &:after {
+                        content: '';
+                        position: absolute;
+                        width: 40px;
+                        height: 40px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        right: 6px;
+                        background: url(../../img/careers/step_down.png) no-repeat;
+                        background-position: left top;
+                        background-size: 40px;
+                    }
+                    &:before {
+                        content: '';
+                        position: absolute;
+                        width: 3px;
+                        height: calc(100% - 25px);
+                        background: $sub-color;
+                        bottom: 0;
+                        right: 25px;
+                    }
+                }
+            }
+            .blk_1 {
+                background: url(../../img/careers/step_1.png) no-repeat;
+                background-position: left 4px;
+            }
+            .blk_2 {
+                background: url(../../img/careers/step_right.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+            .blk_3 {
+                background: url(../../img/careers/step_right.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+        }
+        .blks_2 {
+            position: relative;
+            width: calc(100%);
+            padding-left: 120px;
+            &:before {
+                content: '';
+                position: absolute;
+                width: calc(100% - 50px);
+                height: 3px;
+                background: $sub-color;
+                top: 0;
+                left: 25px;
+                z-index: -1;
+            }
+            .blk {
+                margin-top: -25px;
+                &:first-child {
+                    &:before {
+                        // content: '';
+                        // position: absolute;
+                        // width: 3px;
+                        // height: 100%;
+                        // background: $sub-color;
+                        // top: 0;
+                        // left: 25px;
+                        // z-index: -1;
+                        content: '';
+                        position: absolute;
+                        width: 3px;
+                        height: 30px;
+                        background: $sub-color;
+                        top: -13.5px;
+                        left: 15px;
+                    }
+                }
+            }
+            .blk_1 {
+                background: url(../../img/careers/step_left.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+                // &:after {
+                //     content: '';
+                //     position: absolute;
+                //     width: 55px;
+                //     height: 55px;
+                //     top: 50%;
+                //     transform: translateY(-50%);
+                //     left: 0px;
+                //     background: url(../../img/careers/step_down.png) no-repeat;
+                //     background-position: 7px 5px;
+                //     background-size: 40px;
+                // }
+            }
+            .blk_2 {
+                background: url(../../img/careers/step_left.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+            .blk_3 {
+                background: url(../../img/careers/step_left.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+        }
+        .blks_3 {
+            position: relative;
+            width: calc(100%);
+            padding-left: 120px;
+            &:before {
+                content: '';
+                position: absolute;
+                width: calc(100% - 60px);
+                height: 3px;
+                background: $sub-color;
+                top: 0;
+                left: 25px;
+                z-index: -1;
+            }
+            .blk {
+                margin-top: -25px;
+                padding-bottom: 0;
+                /*                &:last-child{
+                                    &:before{
+                                        content: '';
+                                        position: absolute;
+                                        width: 3px;
+                                        height: 100%;
+                                        background: $sub-color;
+                                        top: 0;
+                                        right: 25px;
+                                        z-index: -1;
+                                    }
+                                }*/
+                &:last-child {
+                    &:before {
+                        content: '';
+                        position: absolute;
+                        width: 3px;
+                        height: 30px;
+                        background: $sub-color;
+                        top: -13.5px;
+                        right: 25px;
+                    }
+                }
+            }
+            .blk_1 {
+                background: url(../../img/careers/step_right.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+            .blk_2 {
+                background: url(../../img/careers/step_right.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+            }
+            .blk_3 {
+                background: url(../../img/careers/step_right.png) no-repeat;
+                background-position: left 6px;
+                background-size: 40px;
+                /*                &:after{
+                                    content: '';
+                                    position: absolute;
+                                    width: 55px;
+                                    height: 55px;
+                                    top: 60px;
+                                    right: 0px;
+                                    background: url(../../img/careers/step_left_2.png) no-repeat;
+                                    background-position: right top;
+                                }*/
+            }
+        }
+    }
+    .onbording {
+        margin-top: 10px;
+        .dbl_blk {
+            .left_blk {
+                width: 250px;
+                float: left;
+                background: $main-color;
+                padding: 30px;
+                h3 {
+                    color: #fff;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                    margin-top: 23px;
+                }
+            }
+            .right_blk {
+                width: calc(100% - 250px);
+                float: left;
+                padding: 30px;
+                background: #ededed;
+                .main_head {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #001b48;
+                    padding-bottom: 3px;
+                }
+                p {
+                    line-height: 15px;
+                    margin-bottom: 25px;
+                    &:first-child {
+                        margin-top: 0;
+                    }
+                    &:last-child {
+                        margin-bottom: 0px;
+                    }
+                    span {
+                        color: $sub-color;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+    .third_blk {
+        .main_head {
+            font-size: 17px;
+            font-weight: bold;
+            color: $main-color;
+        }
+        .dbl_blk {
+            .inner {
+                width: calc(100%/ 2);
+                float: left;
+                padding-right: 50px;
+                h3 {
+                    font-size: 15px;
+                    font-weight: bold;
+                }
+                p {
+                    &:last-child {
+                        margin-top: 30px;
+                    }
+                    a {
+                        color: $sub-color;
+                    }
+                }
+            }
+        }
+    }
+}

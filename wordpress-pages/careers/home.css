@@ -1,0 +1,129 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+/*
+    Created on : Aug 22, 2022, 4:08:03 PM
+    Author     : Jazim Max
+*/
+#career-home {
+  /*    .vdo_section{
+          position: relative;
+  
+          a{
+              &:after{
+                  position: absolute;
+                  content: '';
+                  width: 100%;
+                  height: 99%;
+                  background-color: #00000094;
+                  transition: .5s all;
+                  left: 0;
+                  top: 0;
+                  z-index: 2;
+              }
+              .main_img{
+                  width: 100%;
+              }
+              .play{
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50% , -50%);
+                  width: 80px;
+                  z-index: 3;
+              }
+  
+              .playback{
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50% , -50%);
+                  width: 100px;
+                  opacity:50%;
+                  z-index: 3;
+              }
+  
+              h3{
+                  position: absolute;
+                  top: 50%;
+                  right: 5%;
+                  transform: translateY(-50%);
+                  color: #fff;
+                  font-size: 80px;
+                  letter-spacing: 10px;
+                  text-transform: uppercase;
+                  font-weight: 500;
+                  z-index: 3;
+              }
+          }
+      }*/ }
+  #career-home .link_blks {
+    margin-left: -50px; }
+    #career-home .link_blks .blk {
+      width: calc((100% / 2) - 50px);
+      float: left;
+      margin-left: 50px;
+      position: relative;
+      margin-bottom: 50px;
+      transition: .4s all;
+      overflow: hidden;
+      /*            &:after{
+                      position: absolute;
+                      content: '';
+                      width: 100%;
+                      height: 100%;
+                      background-color: #00000094;
+                      transition: .5s all;
+                      left: 0;
+                      top: 0;
+                      z-index: 2;
+                  }*/ }
+      #career-home .link_blks .blk a {
+        z-index: 3;
+        position: absolute;
+        width: 100%;
+        height: 100%; }
+      #career-home .link_blks .blk:before {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 100%;
+        background-color: #00000094;
+        transition: .5s all;
+        left: 0;
+        top: 100%;
+        z-index: 2;
+        transition: .4s all; }
+      #career-home .link_blks .blk:hover:before {
+        top: 0; }
+      #career-home .link_blks .blk:hover h3 {
+        font-size: 25px;
+        background: unset;
+        bottom: 50%;
+        transform: translateY(50%); }
+      #career-home .link_blks .blk:hover:nth-child(even) h3 {
+        background: none; }
+      #career-home .link_blks .blk:hover:nth-child(odd) h3 {
+        background: none; }
+      #career-home .link_blks .blk img {
+        width: 100%; }
+      #career-home .link_blks .blk h3 {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 15px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: -4px;
+        text-transform: uppercase;
+        text-align: center;
+        z-index: 3;
+        transition: .4s all; }
+      #career-home .link_blks .blk:nth-child(even) h3 {
+        background: #06a2c4; }
+      #career-home .link_blks .blk:nth-child(odd) h3 {
+        background: #001b48; }
+
+/*# sourceMappingURL=home.css.map */

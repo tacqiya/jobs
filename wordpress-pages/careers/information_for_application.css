@@ -1,0 +1,286 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+/*
+    Created on : Aug 22, 2022, 5:21:06 PM
+    Author     : Jazim Max
+*/
+.banner {
+  margin-bottom: 0 !important; }
+
+.menu-careers_menu-container ul li {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 5px;
+  padding-top: 0px;
+  padding-bottom: 4px;
+  border-bottom: 1px dotted #fff;
+  padding-left: 37px;
+  background: url(../../img/icons/slide-menu-main-plus.png) no-repeat left top;
+  background-size: 27px;
+  display: block; }
+
+.breadcrumb {
+  margin: 0 0 0 0 !important; }
+  .breadcrumb:after {
+    content: "";
+    display: block;
+    clear: both; }
+
+.container {
+  margin-top: 99px; }
+
+.career_links ul li {
+  float: left;
+  padding-left: 10px !important;
+  padding: 0px 10px;
+  color: #06a2c4;
+  font-weight: bold;
+  position: relative;
+  background: unset !important;
+  transition: .4s all;
+  line-height: 24px !important; }
+  .career_links ul li:hover {
+    color: #001b48; }
+  .career_links ul li:after {
+    content: ' ';
+    position: absolute;
+    right: 0;
+    top: 7px;
+    height: 12px;
+    border-right: 2px solid #001b48; }
+  .career_links ul li:first-child {
+    padding-left: 0 !important; }
+  .career_links ul li:last-child {
+    padding-right: 0; }
+    .career_links ul li:last-child:after {
+      display: none; }
+
+@media screen and (max-width: 500px) {
+  .career_links ul li {
+    width: 100%;
+    border: 1px solid #001b48;
+    text-align: center;
+    padding: 0;
+    margin-bottom: 10px; }
+    .career_links ul li:last-child {
+      margin-bottom: 0; }
+    .career_links ul li:after {
+      display: none; }
+    .career_links ul li a {
+      width: 100%;
+      padding: 5px 10px;
+      display: block; } }
+#information h2 {
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase; }
+#information .steps .blks {
+  padding: 0px;
+  /*            &:first-child{
+                  padding: 0px 0px;
+                  padding-bottom: 60px;
+              }*/ }
+  #information .steps .blks .blk {
+    width: calc((100% / 3));
+    /*margin-left: 15px;*/
+    float: left;
+    padding: 60px 0px;
+    padding-right: 50px; }
+    #information .steps .blks .blk h4 {
+      font-weight: bold;
+      color: #06a2c4;
+      margin-bottom: 10px; }
+    #information .steps .blks .blk p {
+      margin: 0;
+      line-height: 20px;
+      color: #6c6c6c; }
+      #information .steps .blks .blk p:last-child {
+        margin-top: 10px; }
+#information .steps .blks_1 {
+  position: relative;
+  padding-right: 70px; }
+  #information .steps .blks_1:before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 80px);
+    height: 3px;
+    background: #06a2c4;
+    top: 25px;
+    right: 25px;
+    z-index: -1; }
+  #information .steps .blks_1 .blk:last-child:after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 6px;
+    background: url(../../img/careers/step_down.png) no-repeat;
+    background-position: left top;
+    background-size: 40px; }
+  #information .steps .blks_1 .blk:last-child:before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: calc(100% - 25px);
+    background: #06a2c4;
+    bottom: 0;
+    right: 25px; }
+  #information .steps .blks_1 .blk_1 {
+    background: url(../../img/careers/step_1.png) no-repeat;
+    background-position: left 4px; }
+  #information .steps .blks_1 .blk_2 {
+    background: url(../../img/careers/step_right.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+  #information .steps .blks_1 .blk_3 {
+    background: url(../../img/careers/step_right.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+#information .steps .blks_2 {
+  position: relative;
+  width: calc(100%);
+  padding-left: 120px; }
+  #information .steps .blks_2:before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 50px);
+    height: 3px;
+    background: #06a2c4;
+    top: 0;
+    left: 25px;
+    z-index: -1; }
+  #information .steps .blks_2 .blk {
+    margin-top: -25px; }
+    #information .steps .blks_2 .blk:first-child:before {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 30px;
+      background: #06a2c4;
+      top: -13.5px;
+      left: 15px; }
+  #information .steps .blks_2 .blk_1 {
+    background: url(../../img/careers/step_left.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+  #information .steps .blks_2 .blk_2 {
+    background: url(../../img/careers/step_left.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+  #information .steps .blks_2 .blk_3 {
+    background: url(../../img/careers/step_left.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+#information .steps .blks_3 {
+  position: relative;
+  width: calc(100%);
+  padding-left: 120px; }
+  #information .steps .blks_3:before {
+    content: '';
+    position: absolute;
+    width: calc(100% - 60px);
+    height: 3px;
+    background: #06a2c4;
+    top: 0;
+    left: 25px;
+    z-index: -1; }
+  #information .steps .blks_3 .blk {
+    margin-top: -25px;
+    padding-bottom: 0;
+    /*                &:last-child{
+                        &:before{
+                            content: '';
+                            position: absolute;
+                            width: 3px;
+                            height: 100%;
+                            background: $sub-color;
+                            top: 0;
+                            right: 25px;
+                            z-index: -1;
+                        }
+                    }*/ }
+    #information .steps .blks_3 .blk:last-child:before {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 30px;
+      background: #06a2c4;
+      top: -13.5px;
+      right: 25px; }
+  #information .steps .blks_3 .blk_1 {
+    background: url(../../img/careers/step_right.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+  #information .steps .blks_3 .blk_2 {
+    background: url(../../img/careers/step_right.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px; }
+  #information .steps .blks_3 .blk_3 {
+    background: url(../../img/careers/step_right.png) no-repeat;
+    background-position: left 6px;
+    background-size: 40px;
+    /*                &:after{
+                        content: '';
+                        position: absolute;
+                        width: 55px;
+                        height: 55px;
+                        top: 60px;
+                        right: 0px;
+                        background: url(../../img/careers/step_left_2.png) no-repeat;
+                        background-position: right top;
+                    }*/ }
+#information .onbording {
+  margin-top: 10px; }
+  #information .onbording .dbl_blk .left_blk {
+    width: 250px;
+    float: left;
+    background: #001b48;
+    padding: 30px; }
+    #information .onbording .dbl_blk .left_blk h3 {
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 23px; }
+  #information .onbording .dbl_blk .right_blk {
+    width: calc(100% - 250px);
+    float: left;
+    padding: 30px;
+    background: #ededed; }
+    #information .onbording .dbl_blk .right_blk .main_head {
+      font-size: 14px;
+      font-weight: bold;
+      color: #001b48;
+      padding-bottom: 3px; }
+    #information .onbording .dbl_blk .right_blk p {
+      line-height: 15px;
+      margin-bottom: 25px; }
+      #information .onbording .dbl_blk .right_blk p:first-child {
+        margin-top: 0; }
+      #information .onbording .dbl_blk .right_blk p:last-child {
+        margin-bottom: 0px; }
+      #information .onbording .dbl_blk .right_blk p span {
+        color: #06a2c4;
+        font-weight: bold; }
+#information .third_blk .main_head {
+  font-size: 17px;
+  font-weight: bold;
+  color: #001b48; }
+#information .third_blk .dbl_blk .inner {
+  width: calc(100%/ 2);
+  float: left;
+  padding-right: 50px; }
+  #information .third_blk .dbl_blk .inner h3 {
+    font-size: 15px;
+    font-weight: bold; }
+  #information .third_blk .dbl_blk .inner p:last-child {
+    margin-top: 30px; }
+  #information .third_blk .dbl_blk .inner p a {
+    color: #06a2c4; }
+
+/*# sourceMappingURL=information_for_application.css.map */

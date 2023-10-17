@@ -1,0 +1,117 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/style.scss to edit this template
+*/
+
+
+/*
+    Created on : Sep 1, 2022, 4:07:14 PM
+    Author     : Jazim Max
+*/
+
+@media screen and (max-width: 900px) {
+    #information {
+        .steps {
+            position: relative;
+            &:before {
+                content: '';
+                position: absolute;
+                width: 3px;
+                height: calc(100% - 50px);
+                background: #06a2c4;
+                bottom: 0px;
+                left: 14px;
+            }
+            .blks {
+                &:first-child {
+                    margin-top: -20px;
+                }
+                .blk {
+                    padding: 0px 80px;
+                    padding-right: 0px;
+                    width: 100%;
+                    min-height: 55px;
+                    margin-top: 20px;
+                    background: url(../../../img/careers/step_right.png) no-repeat;
+                    background-position: left top;
+                    background-size: 30px;
+                    padding-left: 45px;
+                    &:last-child {
+                        &:after {
+                            display: none;
+                        }
+                        &:before {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            .blks_1 {
+                padding-right: 0;
+                &:before {
+                    display: none;
+                }
+            }
+            .blks_2 {
+                padding-left: 0;
+                display: flex;
+                flex-direction: column-reverse;
+                &:before {
+                    display: none;
+                }
+                .blk {
+                    &:first-child {
+                        &:after {
+                            display: none;
+                        }
+                        &:before {
+                            display: none;
+                        }
+                    }
+                }
+            }
+            .blks_3 {
+                padding-left: 0;
+                &:before {
+                    display: none;
+                }
+                .blk {
+                    &:last-child {
+                        background: url(../../../img/careers/step_right.png) no-repeat #fff;
+                        background-position: left top;
+                        background-size: 30px;
+                        padding-left: 45px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 700px) {
+    #information {
+        .onbording {
+            .dbl_blk {
+                .left_blk {
+                    width: 100%;
+                    padding: 10px;
+                    h3 {
+                        margin-top: 0;
+                    }
+                }
+                .right_blk {
+                    width: 100%;
+                    padding: 30px 10px;
+                }
+            }
+        }
+        .third_blk {
+            .dbl_blk {
+                .inner {
+                    width: 100%;
+                    padding-right: 0;
+                }
+            }
+        }
+    }
+}

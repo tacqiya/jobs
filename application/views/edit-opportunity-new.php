@@ -148,7 +148,7 @@
 </div>
 
 <script>
-    <?php if ($url) { ?>
+    <?php if (isset($url)) { ?>
         setTimeout(function() {
             window.location.replace("<?= $url ?>");
         }, 10);
