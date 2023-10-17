@@ -9,6 +9,8 @@
                         <option value="Staff">Staff</option>
                         <option value="Faculty">Faculty</option>
                         <option value="Research">Research</option>
+                <option value="General Application">General Application</option>
+
             </select>
         </div>
         <div class="form-group clear" >
@@ -22,16 +24,12 @@
         </div>
 
         <div class="form-group clear">
-            <label>Requisition Id</label>
-            <input class="input-field" type="text" name="requisition_id" />
+            <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="requisition_id" required />
         </div>
         <div class="form-group clear">
-            <label>Requisition Title</label>
-            <input class="input-field" type="text" name="requisition_title" />
-        </div>
-        <div class="form-group clear">
-            <label>Description Value</label>
-            <input class="input-field" type="text" name="description_value" />
+            <label>Position Title <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="description_value" required />
         </div>
         <div class="form-group clear">
             <label>Position type</label>
@@ -54,10 +52,6 @@
             <input class="input-field" type="text" name="justification" />
         </div>
         <div class="form-group clear">
-            <label>Organization Name</label>
-            <input class="input-field" type="text" name="org_name" />
-        </div>
-        <div class="form-group clear">
             <label>Sector Name</label>
             <input class="input-field" type="text" name="sector_name" />
         </div>
@@ -66,8 +60,8 @@
             <input class="input-field" type="text" name="division_name" />
         </div>
         <div class="form-group clear">
-            <label>Department Name</label>
-            <input class="input-field" type="text" name="dept_name" />
+            <label>Department Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="dept_name" required />
         </div>
         <div class="form-group clear">
             <label>Recruiter Name</label>
@@ -78,12 +72,12 @@
             <input class="input-field" type="email" name="recruiter_email" />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Name</label>
-            <input class="input-field" type="text" name="hiring_manager_name" />
+            <label>Hiring Manager Name <span class="text-danger text-bold" style="display: none;" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="hiring_manager_name" id="hiring_manager_name" />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Email</label>
-            <input class="input-field" type="email" name="hiring_manager_email" />
+            <label>Hiring Manager Email <span class="text-danger text-bold" style="display: none;" title="Mandatory">*</span></label>
+            <input class="input-field" type="email" name="hiring_manager_email" id="hiring_manager_email" />
         </div>
         <div class="form-group clear">
             <label>Apply Link</label>
@@ -114,20 +108,16 @@
             <input class="input-field" type="text" name="project_auth_name" />
         </div>
         <div class="form-group clear">
-            <label>Project Authorizer Email</label>
-            <input class="input-field" type="email" name="project_auth_email" />
-        </div>
-        <div class="form-group clear">
-            <label>Date Posted</label>
-            <input class="input-field" type="text" name="date_posted" />
-        </div>
-        <div class="form-group clear">
             <label>Closing Date</label>
             <input class="input-field" type="text" name="closing_date" />
         </div>
         <div class="form-group clear">
             <label>Status Details</label>
             <input class="input-field" type="text" name="status_details" />
+        </div>
+        <div class="form-group clear">
+            <label>Years of Experience <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="years_of_experience" required />
         </div>
 
         <div class="form-group clear">
@@ -169,27 +159,28 @@
         evt.cancel();
     });
 
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-                $('#img_pre').attr('src', e.target.result).css('opacity', 1);
-            }
-            reader.readAsDataURL(input.files[0]);
+    $("#category").on("change", function() {
+        var valueSelected = this.value;
+        console.log(valueSelected)
+        if (valueSelected == 'Faculty') {
+            $('#college').attr('disabled', false);
+            $('#college').closest('.form-group').css('display', 'block');
+        } else {
+            $('#college').attr('disabled', true);
+            $('#college').closest('.form-group').css('display', 'none');
         }
-    }
 
-
-    $("#img_input").change(function() {
-        readURL(this);
-    });
-
-    $(document).on("click", ".close", function() {
-        $(this).closest('.form-group').remove();
-        var data_id = $(this).closest('.form-group').attr("data-id");
-        editor = 'editor' + data_id;
-        CKEDITOR.instances[editor].destroy();
+        if (valueSelected == 'Staff' || valueSelected == 'Faculty') {
+            $('#hiring_manager_name').attr('required', false);
+            $('#hiring_manager_email').attr('required', false);
+            $('#hiring_manager_name').prev().children().hide();
+            $('#hiring_manager_email').prev().children().hide();
+        } else if (valueSelected == 'Research') {
+            $('#hiring_manager_name').attr('required', true);
+            $('#hiring_manager_email').attr('required', true);
+            $('#hiring_manager_name').prev().children().show();
+            $('#hiring_manager_email').prev().children().show();
+        }
     });
 
 </script>

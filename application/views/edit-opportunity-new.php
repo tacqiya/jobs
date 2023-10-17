@@ -9,7 +9,7 @@
                 <option value="Staff" <?= ($opportunity->category == 'Staff') ? 'selected' : ''; ?>>Staff</option>
                 <option value="Faculty" <?= ($opportunity->category == 'Faculty') ? 'selected' : ''; ?>>Faculty</option>
                 <option value="Research" <?= ($opportunity->category == 'Research') ? 'selected' : ''; ?>>Research</option>
-                <option value="Research" <?= ($opportunity->category == 'General Application') ? 'selected' : ''; ?>>General Application</option>
+                <option value="General Application" <?= ($opportunity->category == 'General Application') ? 'selected' : ''; ?>>General Application</option>
             </select>
         </div>
 
@@ -56,12 +56,12 @@
             <input class="input-field" type="text" name="sector_name" value="<?= $opportunity->sector_name ?>" />
         </div>
         <div class="form-group clear">
-            <label>Division Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <label>Division Name</label>
             <input class="input-field" type="text" name="division_name" value="<?= $opportunity->division_name ?>" />
         </div>
         <div class="form-group clear">
-            <label>Department Name</label>
-            <input class="input-field" type="text" name="dept_name" value="<?= $opportunity->dept_name ?>" />
+            <label>Department Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="dept_name" value="<?= $opportunity->dept_name ?>" required />
         </div>
         <div class="form-group clear">
             <label>Recruiter Name</label>
@@ -72,12 +72,12 @@
             <input class="input-field" type="email" name="recruiter_email" value="<?= $opportunity->recruiter_email ?>" />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Name <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="text" name="hiring_manager_name" value="<?= $opportunity->hiring_manager_name ?>" required />
+            <label>Hiring Manager Name <?= ($opportunity->category == 'Research') ? '<span class="text-danger text-bold" title="Mandatory">*</span>' : ''; ?></label>
+            <input class="input-field" type="text" name="hiring_manager_name" id="hiring_manager_name" value="<?= $opportunity->hiring_manager_name ?>" <?= ($opportunity->category == 'Research') ? 'required' : ''; ?> />
         </div>
         <div class="form-group clear">
-            <label>Hiring Manager Email <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="email" name="hiring_manager_email" value="<?= $opportunity->hiring_manager_email ?>" required />
+            <label>Hiring Manager Email <?= ($opportunity->category == 'Research') ? '<span class="text-danger text-bold" title="Mandatory">*</span>' : ''; ?></label>
+            <input class="input-field" type="email" name="hiring_manager_email" id="hiring_manager_email" value="<?= $opportunity->hiring_manager_email ?>" <?= ($opportunity->category == 'Research') ? 'required' : ''; ?> />
         </div>
         <div class="form-group clear">
             <label>Apply Link</label>
@@ -168,17 +168,6 @@
         evt.cancel();
     });
 
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-                $('#img_pre').attr('src', e.target.result).css('opacity', 1);
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
     $("#category").on("change", function() {
         var valueSelected = this.value;
         console.log(valueSelected)
@@ -188,6 +177,18 @@
         } else {
             $('#college').attr('disabled', true);
             $('#college').closest('.form-group').css('display', 'none');
+        }
+
+        if (valueSelected == 'Staff' || valueSelected == 'Faculty') {
+            $('#hiring_manager_name').attr('required', false);
+            $('#hiring_manager_email').attr('required', false);
+            $('#hiring_manager_name').prev().children().hide();
+            $('#hiring_manager_email').prev().children().hide();
+        } else if (valueSelected == 'Research') {
+            $('#hiring_manager_name').attr('required', true);
+            $('#hiring_manager_email').attr('required', true);
+            $('#hiring_manager_name').prev().children().show();
+            $('#hiring_manager_email').prev().children().show();
         }
     });
 
