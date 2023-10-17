@@ -139,13 +139,21 @@
         <div class="form-group clear">
             <label></label>
             <input type="submit" value="Update Job" class="common-button" id="submit-btn" />&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" value="Publish" class="common-button" id="publish-btn" />
+            <?php if ($opportunity->publish == 'edited') { ?>
+                <input type="button" value="Publish" class="common-button" id="publish-btn" />
+            <?php } ?>
         </div>
         </form>
     </div>
 </div>
 
 <script>
+    <?php if ($url) { ?>
+        setTimeout(function() {
+            window.location.replace("<?= $url ?>");
+        }, 10);
+    <?php } ?>
+
     CKEDITOR.replace('descriptions', {
         plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
     }).on('required', function(evt) {
@@ -203,7 +211,10 @@
     $('#publish-btn').on('click', function() {
         let id = <?= $opportunity->id ?>;
         var fd = $('#form').serializeArray();
-        fd.push({name: 'id', value: id});
+        fd.push({
+            name: 'id',
+            value: id
+        });
 
         $.ajax({
             method: "POST",
@@ -211,7 +222,21 @@
             data: fd,
             dataType: "json",
             success: function(data) {
-                console.log(data);
+                var msg = data['msg'];
+                if (data['type'] == 'success') {
+                    $('body').append('<div class="new-alert success">' + msg + '</div>');
+                    setTimeout(function() {
+                        $(".new-alert").hide();
+                        $(".new-alert").remove();
+                        window.location.reload();
+                    }, 2000);
+                } else if (data['type'] == 'success') {
+                    $('body').append('<div class="new-alert error">' + msg + '</div>');
+                    setTimeout(function() {
+                        $(".new-alert").hide();
+                        $(".new-alert").remove();
+                    }, 2000);
+                }
             },
             error: function(xhr, status, error) {
                 console.log(xhr.responseText);

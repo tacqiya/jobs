@@ -3,6 +3,8 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
+
+
 /* 
     Created on : 23-May-2018, 15:12:01
     Author     : User
@@ -17,19 +19,34 @@ and open the template in the editor.
     position: fixed;
     bottom: 40px;
     right: 40px;
-        z-index: 9999;
+    z-index: 9999;
 }
 
 .alert-box span {
-    font-weight:bold;
-    text-transform:uppercase;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .error {
-    background:#ffecec ;
-    border:1px solid #f5aca6;
+    background: #ffecec;
+    border: 1px solid #f5aca6;
 }
+
 .success {
     background: #e9ffda;
     border: 1px solid #648c45;
+}
+
+.new-alert {
+    color: #555;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 10px;
+    margin: 10px;
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 9999;
+    font-weight: bold;
+    text-transform: uppercase;
 }

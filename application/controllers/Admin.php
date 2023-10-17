@@ -19,7 +19,7 @@ class Admin extends CI_Controller
 	{
 		$this->form_validation->set_rules('username', 'Username', 'required');
 		$this->form_validation->set_rules('password', 'Password', 'required');
-		
+
 		if ($this->input->post()) {
 			if ($this->form_validation->run() === TRUE) {
 				$name = $this->input->post('username');
@@ -27,7 +27,7 @@ class Admin extends CI_Controller
 				$query = $this->common->getRowByMulty(TBL_LOGIN, array('username' => $name, 'password' => $pass));
 				if (!empty($query->id)) {
 					$this->session->set_userdata('admin-login', TRUE);
-					if($this->session->userdata('stored_redirect_url')) {
+					if ($this->session->userdata('stored_redirect_url')) {
 						redirect($this->session->userdata('stored_redirect_url'), 'refresh');
 					} else {
 						redirect(ADMIN_URL . '/dashboard', 'refresh');
@@ -220,13 +220,16 @@ class Admin extends CI_Controller
 			extract($this->input->post());
 
 			$data_pass = $this->input->post();
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
+			// $check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
+			$data_pass['publish'] = 'edited';
+			$temp_opport = $this->common->getRowBy(TBL_JOB_TEMP, 'requisition_id', $check_temp_req_id->requisition_id);
 			// echo "<pre>"; print_r($data_pass);exit;
-			$this->db->update(TBL_JOB, $data_pass, array('id' => $id));
+			$this->db->update(TBL_JOB_TEMP, $data_pass, array('requisition_id' => $check_temp_req_id->requisition_id));
 			if ($this->db->trans_status()) {
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
+				$data['url'] = base_url() . ADMIN_URL . '/edit-opportunity-temp/' . $check_temp_req_id->id;
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
@@ -234,6 +237,7 @@ class Admin extends CI_Controller
 		$data['page'] = 'edit-opportunity';
 		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
 		$data['opportunity'] = $this->common->getRowBy(TBL_JOB, 'id', $id);
+		$data['temp_opportunity'] = $this->common->getRowBy(TBL_JOB_TEMP, 'id', $id);
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('edit-opportunity-new', $data);
@@ -244,7 +248,7 @@ class Admin extends CI_Controller
 	{
 		$this->is_login();
 		$data['page'] = 'all-opportunities-temp';
-		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish' => '']); //_e($data['opportunities']);exit;
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published']); //_e($data['opportunities']);exit;
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_temp', $data);
@@ -258,7 +262,7 @@ class Admin extends CI_Controller
 			extract($this->input->post());
 
 			$data_pass = $this->input->post();
-			// $data_pass['publish'] = 'published';
+			$data_pass['publish'] = 'edited';
 			// $check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
@@ -269,41 +273,50 @@ class Admin extends CI_Controller
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 			}
 			if ($updated) {
-				if($data_pass['category'] == "Staff") {
+				if ($data_pass['category'] == "Staff") {
+					$email_send = TRUE;
 					$user_send_data = [
 						['name' => $this->site_config->staff_1, 'email' => $this->site_config->staff_email_1],
 						['name' => $this->site_config->staff_2, 'email' => $this->site_config->staff_email_2]
 					];
-				} else if($data_pass['category'] == "Faculty") {
+				} else if ($data_pass['category'] == "Faculty") {
+					$email_send = TRUE;
 					$user_send_data = [
 						['name' => $this->site_config->faculty_1, 'email' => $this->site_config->faculty_email_1],
 						['name' => $this->site_config->faculty_2, 'email' => $this->site_config->faculty_email_2]
 					];
-				} else if($data_pass['category'] == "Research") {
+				} else if ($data_pass['category'] == "Research") {
+					$email_send = TRUE;
 					$user_send_data = [
 						['name' => $this->site_config->research_1, 'email' => $this->site_config->research_email_1],
 						['name' => $this->site_config->research_2, 'email' => $this->site_config->research_email_2]
 					];
+				} else {
+					$email_send = FALSE;
 				}
 				// echo "<pre>"; print_r($user_send_data);exit;
-				$create_link = base_url().'admin-career/edit-opportunity-temp/20';
-				foreach($user_send_data as $user) {
-					$message_data = $this->load->view('email_template', ['url' => $create_link, 'user' => $user], true);
-					$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
-					$message = $result_message;
-					// echo "<pre>"; print_r($message);exit;
-					$to_email = $user['email'];
-					$this->load->library('email');
-					$this->email->set_newline("\r\n");
-					$this->email->from('no-reply@ku.ac.ae'); // change it to yours
-					$this->email->to($to_email);
-					$this->email->subject('Job Review Session');
-					$this->email->message($message);
-					$this->email->set_mailtype("html");
-					$this->email->send();
+				if ($email_send) {
+					$create_link = base_url() . 'admin-career/edit-opportunity-temp/20';
+					foreach ($user_send_data as $user) {
+						$message_data = $this->load->view('email_template', ['url' => $create_link, 'user' => $user], true);
+						$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
+						$message = $result_message;
+						// echo "<pre>"; print_r($message);exit;
+						$to_email = $user['email'];
+						$this->load->library('email');
+						$this->email->set_newline("\r\n");
+						$this->email->from('no-reply@ku.ac.ae'); // change it to yours
+						$this->email->to($to_email);
+						$this->email->subject('Job Review Session');
+						$this->email->message($message);
+						$this->email->set_mailtype("html");
+						$this->email->send();
+					}
+
+					$data['result'] = array('type' => 'success', 'msg' => 'Job has been updated & send for review.');
+				} else {
+					$data['result'] = array('type' => 'success', 'msg' => 'Job has been updated');
 				}
-				
-				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated & send for review.');
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
@@ -328,9 +341,9 @@ class Admin extends CI_Controller
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
-			echo "<pre>";
-			print_r($data_pass);
-			exit;
+			$data_pass['publish'] = 'published';
+			unset($data_pass['id']);
+			// echo "<pre>"; print_r($data_pass); exit;
 			if ($check_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $data_pass['requisition_id']), $data_pass);
@@ -339,9 +352,9 @@ class Admin extends CI_Controller
 				$inserted = $this->db->insert(TBL_JOB, $data_pass);
 			}
 			if ($inserted) {
-				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
+				echo json_encode(array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.'));
 			} else {
-				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
+				echo json_encode(array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!'));
 			}
 		}
 	}
