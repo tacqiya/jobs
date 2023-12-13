@@ -64,6 +64,10 @@
             <input class="input-field" type="text" name="dept_name" required />
         </div>
         <div class="form-group clear">
+            <label>Required Years of Experience <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="years_of_experience" required />
+        </div>
+        <div class="form-group clear">
             <label>Recruiter Name</label>
             <input class="input-field" type="text" name="recruiter_name" />
         </div>
@@ -114,10 +118,6 @@
         <div class="form-group clear">
             <label>Status Details</label>
             <input class="input-field" type="text" name="status_details" />
-        </div>
-        <div class="form-group clear">
-            <label>Years of Experience <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="text" name="years_of_experience" required />
         </div>
 
         <div class="form-group clear">

@@ -582,32 +582,33 @@ class Admin extends CI_Controller
 						'description_value' => $worksheet[1], //RequisitionDescription
 						'date_posted' => $worksheet[6], //TargetStartDate
 						'status_details' => $worksheet[8], //StatusDetails
-						'project_code' => $worksheet[9], //PROJECTCODE
-						'project_auth_name' => $worksheet[10], //PROJECTAUTHORIZER
-						'project_auth_email' => $worksheet[11], //PROJECTAUTHORIZEREMAIL
-						'project_manager_name' => $worksheet[13], //PROJECTMANAGER
-						'project_manager_email' => $worksheet[14], //PROJECTMANAGEREMAIL
-						'descriptions' => $worksheet[16], //DescriptionExternalHTML
-						'closing_date' => $worksheet[18], //COMPLETION_DATE
-						'hiring_manager_name' => $worksheet[19] . ' ' . $worksheet[20], //HiringManagerFirstName + HiringManagerLastName
-						'hiring_manager_email' => $worksheet[22], //HiringManagerEmail
-						'recruiter_name' => $worksheet[23] . ' ' . $worksheet[24], //RecruiterFirstName + RecruiterLastName
-						'recruiter_email' => $worksheet[25], //RecruiterEmail
-						'org_name' => $worksheet[28], //Organization
-						'sector_name' => $worksheet[29], //Sector
-						'division_name' => $worksheet[30], //Division
-						'dept_name' => $worksheet[31], //Department
+						'project_code' => $worksheet[10], //PROJECTCODE
+						'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
+						'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
+						'project_manager_name' => $worksheet[14], //PROJECTMANAGER
+						'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
+						'descriptions' => $worksheet[17], //DescriptionExternalHTML
+						'closing_date' => $worksheet[19], //COMPLETION_DATE
+						'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
+						'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
+						'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
+						'recruiter_email' => $worksheet[26], //RecruiterEmail
+						'org_name' => $worksheet[29], //Organization
+						'sector_name' => $worksheet[30], //Sector
+						'division_name' => $worksheet[31], //Division
+						'dept_name' => $worksheet[32], //Department
 						'apply_link' => $apply_link,
-						'publish' => '',
+						'publish' => ($worksheet[9] == 'Posted') ? 'published' : '',
 						'slug' => $slug,
 						'category' => $worksheet[4], //Category
-						'college' => (strpos(strtolower($worksheet[31]), 'college') !== false) ? $worksheet[31] : '',
+						'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
 						'datetime' => date('Y-m-d H:i:s')
 					];
 					if ($checkid) {
 						$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 					} else {
 						$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+						if($worksheet[9] == 'Posted') { $inserted_2 = $this->db->insert(TBL_JOB, $insertData); }
 					}
 				}
 				// _e($insertData);
