@@ -596,7 +596,7 @@ class Admin extends CI_Controller
 						'project_manager_name' => $worksheet[14], //PROJECTMANAGER
 						'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
 						'descriptions' => $worksheet[17], //DescriptionExternalHTML
-						'closing_date' => $worksheet[19], //COMPLETION_DATE
+						'closing_date' => substr($worksheet[19], 0, strpos($worksheet[19], "T")), //COMPLETION_DATE
 						'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
 						'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
 						'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName

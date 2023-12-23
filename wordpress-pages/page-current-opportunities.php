@@ -35,6 +35,19 @@ if (have_posts()) : the_post();
         .hide {
             display: none !important
         }
+        .create-acnt {
+            padding: 6px 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #001b48;
+            border: 2px solid #06a2c4;
+            display: inline-block;
+            transition: .4s all;
+        }
+        .create-acnt:hover {
+            background: #06a2c4;
+            color: #fff;
+        }
     </style>
 
     <link href="<?php bloginfo('template_directory'); ?>/assets/plugins/paginationjs/pagination.css" type="text/css" rel="stylesheet"/>
@@ -197,6 +210,14 @@ if (have_posts()) : the_post();
                                     <div class="pagination_section clear">
                                         <h3 class="pager-<?= $i ?>"></h3>
                                         <div class="pagination" id="pagination-<?= $i ?>"></div>
+                                    </div>
+                                <?php } ?>
+
+                                <?php if ($cat->title == 'General Application') { ?>
+                                    <div>
+                                        <span style="font-weight: bold; display: block;">We welcome candidates interested in joining our team to set up their profile on our career site. Please click the link below to create an account and set up your profile for any potential opportunities.</span>
+                                        <br>
+                                        <a class="create-acnt" href="https://careers.ku.ac.ae/careersection/iam/accessmanagement/login.jsf?lang=en&redirectionURI=https%3A%2F%2Fcareers.ku.ac.ae%2Fcareersection%2Fku%2Bexternal%2Bportal%2Fmoresearch.ftl%3Fpostdata%3D%24kHN6pcA6M6vNqMWxV5Vkaw%26lang%3Den%26ftlcompclass%3DLoginComponent&TARGET=https%3A%2F%2Fcareers.ku.ac.ae%2Fcareersection%2Fku%2Bexternal%2Bportal%2Fmoresearch.ftl%3Fpostdata%3D%24kHN6pcA6M6vNqMWxV5Vkaw%26lang%3Den%26ftlcompclass%3DLoginComponent">Apply</a>
                                     </div>
                                 <?php } ?>
 
@@ -412,7 +433,7 @@ if (have_posts()) : the_post();
 
             <?php } else { ?>
 
-                    for (let j = 1; j <= 4; j++) {
+                    for (let j = 1; j <= 3; j++) {
                         if (j != 2) {
                             $('#pagination-' + j).pagination({
                                 dataSource: eval(`DATA_SOURCE_${j}`),
