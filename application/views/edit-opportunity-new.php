@@ -24,8 +24,12 @@
         </div>
 
         <div class="form-group clear">
+            <label>Requistion ID <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" required disabled />
+        </div>
+        <div class="form-group clear">
             <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" required />
+            <input class="input-field" type="text" name="position_code" value="<?= $opportunity->position_code ?>" required disabled />
         </div>
         <div class="form-group clear">
             <label>Position Title <span class="text-danger text-bold" title="Mandatory">*</span></label>
@@ -151,7 +155,7 @@
     <?php if (isset($url)) { ?>
         setTimeout(function() {
             window.location.replace("<?= $url ?>");
-        }, 10);
+        }, 1000);
     <?php } ?>
 
     CKEDITOR.replace('descriptions', {
@@ -211,10 +215,20 @@
 
     $('#publish-btn').on('click', function() {
         let id = <?= $opportunity->id ?>;
+        let req_id = <?= $opportunity->requisition_id ?>;
+        let pos_code = <?= $opportunity->position_code ?>;
         var fd = $('#form').serializeArray();
         fd.push({
             name: 'id',
             value: id
+        });
+        fd.push({
+            name: 'req_id',
+            value: req_id
+        });
+        fd.push({
+            name: 'pos_code',
+            value: pos_code
         });
 
         $.ajax({

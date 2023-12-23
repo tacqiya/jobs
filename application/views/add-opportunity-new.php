@@ -24,8 +24,12 @@
         </div>
 
         <div class="form-group clear">
-            <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <label>Requistion ID</label>
             <input class="input-field" type="text" name="requisition_id" required />
+        </div>
+        <div class="form-group clear">
+            <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="position_code" required />
         </div>
         <div class="form-group clear">
             <label>Position Title <span class="text-danger text-bold" title="Mandatory">*</span></label>
