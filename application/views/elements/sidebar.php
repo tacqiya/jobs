@@ -15,9 +15,9 @@
                 <i></i>
                 <a class="<?php echo ($page == 'add-opportunity' || $page == 'all-opportunities' || $page == 'edit-opportunity' || $page == 'all-opportunities-temp' || $page == 'edit-opportunity-temp') ? 'active' : ''; ?>" href="#">Opportunity</a>
                 <ul class="sub">
-                <li class="<?php echo ($page == 'edit-opportunities-temp' || $page == 'all-opportunities-temp') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/opportunities-temp">Temporary Jobs</a></li>
+                <li class="<?php echo ($page == 'edit-opportunity-temp' || $page == 'all-opportunities-temp') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/opportunities-temp">Unpublished Jobs</a></li>
+                    <li class="<?php echo ($page == 'all-opportunities' || $page == 'edit-opportunity') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/all-opportunities">Published Jobs</a></li>
                     <li class="<?php echo ($page == 'add-opportunity') ? 'active' : ''; ?>"><a href="<?php echo base_url() . ADMIN_URL; ?>/add-opportunity">Add Job</a></li>
-                    <li class="<?php echo ($page == 'all-opportunities' || $page == 'edit-opportunity') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/all-opportunities">All Jobs</a></li>
                 </ul>
             </li>
             <li class="hasSub inquiries">

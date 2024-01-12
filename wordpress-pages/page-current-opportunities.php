@@ -163,55 +163,13 @@ if (have_posts()) : the_post();
                         foreach ($categories as $cat) {
                             ?>
                             <div id="<?= $cat->title ?>" class="content content-<?= $i ?>">
-                                <?php if ($cat->title == 'Faculty') { ?>
-                                    <div class="faculty clear">
-                                        <div class="blockser">
-                                            <span class="blk-sec active" data-id="1">College of Engineering</span>
-                                            <span class="blk-sec" data-id="2">College of Arts and Science</span>
-                                            <span class="blk-sec" data-id="3">College of Medicine and Health Science</span>
-                                        </div>
-                                        <br class="px-60">
-                                        <div class="inside-blk inside-blk-1">
-                                            <div id="blocker-1" class="blockers">
-                                            </div>
-                                            <div class="pagination_sec clear">
-                                                <h3 class="pager-inside-1"></h3>
-                                                <div class="pagination-inside" id="pagination-inside-1"></div>
-                                            </div>
-                                        </div>
-                                        <div class="inside-blk inside-blk-2">
-                                            <div id="blocker-2" class="blockers">
-                                            </div>
-                                            <div class="pagination_sec clear">
-                                                <h3 class="pager-inside-2"></h3>
-                                                <div class="pagination-inside" id="pagination-inside-2"></div>
-                                            </div>
-                                        </div>
-                                        <div class="inside-blk inside-blk-3">
-                                            <div id="blocker-3" class="blockers">
-                                            </div>
-                                            <div class="pagination_sec clear">
-                                                <h3 class="pager-inside-3"></h3>
-                                                <div class="pagination-inside" id="pagination-inside-3"></div>
-                                            </div>
-                                        </div>
-                                        <div class="inside-blk inside-blk-4">
-                                            <div id="blocker-4" class="blockers">
-                                            </div>
-                                            <div class="pagination_sec clear">
-                                                <h3 class="pager-inside-4"></h3>
-                                                <div class="pagination-inside" id="pagination-inside-4"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php } else { ?>
+
                                     <div class="blks">
                                     </div>
                                     <div class="pagination_section clear">
                                         <h3 class="pager-<?= $i ?>"></h3>
                                         <div class="pagination" id="pagination-<?= $i ?>"></div>
                                     </div>
-                                <?php } ?>
 
                                 <?php if ($cat->title == 'General Application') { ?>
                                     <div>
@@ -248,6 +206,10 @@ if (have_posts()) : the_post();
 
     <?php if ($search_result) { ?>
         <script>
+            function isValidDateFormat(dateptring) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                return regex.test(dateptring);
+            }
             function template(data) {
                 for (var i = 0, len = data.length; i < len; i++) {
 
@@ -256,12 +218,28 @@ if (have_posts()) : the_post();
                     // trimmedString = trimmedString.replace(/<\/?[^>]+(>|$)/g, "");
 
                     var apply_before = '';
-                    if (data[i].closing_date !== null) {
+                    if (data[i].closing_date !== '') {
+                        var closingDate = data[i].closing_date;
+                        if(isValidDateFormat(data[i].closing_date)) {
+                            var parts = closingDate.split('-');
+                            var date = new Date(parts[0], parts[1] - 1, parts[2]);
+                            var options = { day: '2-digit', month: 'long', year: 'numeric' };
+                            var formattedDate = new Intl.DateTimeFormat('en-GB', options).format(date);
+                        } else {
+                            formattedDate = closingDate;
+                        }
                         apply_before = '<h4>Apply before :</h4>' +
-                                '<h5>' + data[i].closing_date + '</h5>';
+                                '<h5>' + formattedDate + '</h5>';
+                    }
+                    var text = data[i].description_value;
+                    dec_val = text.replace("."+data[i].position_code, "")
+                    if(data[i].dept_name == 'Temp Researcher Internal Fund' || data[i].dept_name == 'Temp Researcher External Fund') {
+                        $depts = '<h4 class="department"></h4>';
+                    } else {
+                        $depts = '<h4 class="department">Department : ' + data[i].dept_name + '</h4>';
                     }
                     data[i] = '<div class="blk blk-' + data[i].slug + '">' +
-                            '<h3>' + data[i].description_value + '</h3>' +
+                            '<h3>' + dec_val + '</h3>' +
                             '<h4 class="department">Department : ' + data[i].dept_name + '</h4>' +
                             '<p>' + trimmedString + '</p>' +
                             '<div class="details clear">' +
@@ -314,6 +292,10 @@ if (have_posts()) : the_post();
 
     <?php } else { ?>
         <script>
+            function isValidDateFormat(dateptring) {
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                return regex.test(dateptring);
+            }
             function template(data) {
 
                 for (var i = 0, len = data.length; i < len; i++) {
@@ -323,17 +305,33 @@ if (have_posts()) : the_post();
                     // trimmedString = trimmedString.replace(/<\/?[^>]+(>|$)/g, "");
 
                     var apply_before = '';
-                    if (data[i].closing_date !== null) {
+                    if (data[i].closing_date !== '') {
+                        var closingDate = data[i].closing_date;
+                        if(isValidDateFormat(data[i].closing_date)) {
+                            var parts = closingDate.split('-');
+                            var date = new Date(parts[0], parts[1] - 1, parts[2]);
+                            var options = { day: '2-digit', month: 'long', year: 'numeric' };
+                            var formattedDate = new Intl.DateTimeFormat('en-GB', options).format(date);
+                        } else {
+                            formattedDate = closingDate;
+                        }
                         apply_before = '<h4>Apply before :</h4>' +
-                                '<h5>' + data[i].closing_date + '</h5>';
+                                '<h5>' + formattedDate + '</h5>';
                     }
-                    if(data[i].dept_name == 'Temp Researcher Internal Fund' || data[i].dept_name == 'Temp Researcher External Fund') {
+                    var text = data[i].description_value;
+                    dec_val = text.replace("."+data[i].position_code, "")
+                    if(data[i].dept_name == null) {
                         $depts = '<h4 class="department"></h4>';
                     } else {
-                        $depts = '<h4 class="department">Department : ' + data[i].dept_name + '</h4>';
+                        if(data[i].dept_name == 'Temp Researcher Internal Fund' || data[i].dept_name == 'Temp Researcher External Fund') {
+                        $depts = '<h4 class="department"></h4>';
+                        } else {
+                            $depts = '<h4 class="department">Department : ' + data[i].dept_name + '</h4>';
+                        }
                     }
+                    
                     data[i] = '<div class="blk blk-' + data[i].slug + '">' +
-                            '<h3>' + data[i].description_value + '</h3>' +
+                            '<h3>' + dec_val + '</h3>' +
                             $depts +
                             '<p>' + trimmedString + '...</p>' +
                             '<div class="details clear">' +
@@ -353,35 +351,7 @@ if (have_posts()) : the_post();
         <?php
         $k = 1;
         foreach ($categories as $cat) {
-            if ($cat->title == 'Faculty') {
-                $opportunities_1 = $wpdb->get_results("SELECT * FROM $table_opportunity WHERE category='$cat->title' AND college='College of Engineering' AND publish='published'");
-                $opportunities_2 = $wpdb->get_results("SELECT * FROM $table_opportunity WHERE category='$cat->title' AND college='College of Arts and Science' AND publish='published'");
-                $opportunities_3 = $wpdb->get_results("SELECT * FROM $table_opportunity WHERE category='$cat->title' AND college='College of Medicine and Health Science' AND publish='published'");
-                $oper_1 = json_encode($opportunities_1);
-                $oper_2 = json_encode($opportunities_2);
-                $oper_3 = json_encode($opportunities_3);
-                if ($oper_1) {
-                    ?>
-                        DATA_SOURCE_FAC_1 = <?= $oper_1 ?>;
-                <?php } else { ?>
-                        DATA_SOURCE_FAC_1 = '[]';
-                    <?php
-                }
-                if ($oper_2) {
-                    ?>
-                        DATA_SOURCE_FAC_2 = <?= $oper_2 ?>;
-                <?php } else { ?>
-                        DATA_SOURCE_FAC_2 = '[]';
-                    <?php
-                }
-                if ($oper_3) {
-                    ?>
-                        DATA_SOURCE_FAC_3 = <?= $oper_3 ?>;
-                <?php } else { ?>
-                        DATA_SOURCE_FAC_3 = '[]';
-                    <?php
-                }
-            } else {
+            
                 $opportunities = $wpdb->get_results("SELECT * FROM $table_opportunity WHERE category='$cat->title' AND publish='published' ");
                 $oper = json_encode($opportunities);
                 ?>
@@ -391,7 +361,6 @@ if (have_posts()) : the_post();
                         DATA_SOURCE_<?= $k ?> = '[]';
                 <?php } ?>
                 <?php
-            }
             $k++;
         }
         ?>
@@ -399,42 +368,10 @@ if (have_posts()) : the_post();
             var catCount = <?php echo count($categories); ?>;
         <?php
         $j = 1;
-        foreach ($categories as $cat) {
-            if ($cat->title == 'Faculty') {
-                ?>
-                    for (let j = 1; j <= 3; j++) {
-                        $('#pagination-inside-' + j).pagination({
-                            dataSource: eval(`DATA_SOURCE_FAC_${j}`),
-                            pageSize: 10,
-                            hideWhenLessThanOnePage: true,
-                            autoHidePrevious: true,
-                            autoHideNext: true,
-                            callback: function (data, pagination) {
-                                // template method of yourself
-                                var html = template(data);
-                                //console.log(html);
-                                if (pagination.totalNumber > 0) {
-                                    if (pagination.totalNumber <= pagination.pageSize * pagination.pageNumber) {
-                                        pageNum = 'RESULTS <span>' + (((pagination.pageNumber - 1) * pagination.pageSize) + 1) + ' - ' + pagination.totalNumber + '</span> of <span>' + pagination.totalNumber + '</span>';
-                                    } else {
-                                        pageNum = 'RESULTS <span>' + (((pagination.pageNumber - 1) * pagination.pageSize) + 1) + ' - ' + pagination.pageSize * pagination.pageNumber + '</span> of <span>' + pagination.totalNumber + '</span>';
-                                    }
-                                    $(".opportunities .content-2 #blocker-" + j).html(html);
-                                } else {
-                                    pageNum = 'RESULTS <span>0 -  0</span> of <span>0</span>';
-                                    $(".opportunities .content-2 #blocker-" + j).html('<h1 class="not-found">No results found</h1>');
-                                }
-                                //                        console.log(html);
-
-                                $(".pager-inside-" + j).html(pageNum);
-                            }
-                        });
-                    }
-
-            <?php } else { ?>
+        foreach ($categories as $cat) { ?>
 
                     for (let j = 1; j <= 3; j++) {
-                        if (j != 2) {
+                        // if (j != 2) {
                             $('#pagination-' + j).pagination({
                                 dataSource: eval(`DATA_SOURCE_${j}`),
                                 pageSize: 10,
@@ -461,10 +398,9 @@ if (have_posts()) : the_post();
                                     $(".pager-" + j).html(pageNum);
                                 }
                             });
-                        }
+                        // }
                     }
                 <?php
-            }
             $j++;
         }
         ?>

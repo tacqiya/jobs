@@ -191,7 +191,7 @@ class Admin extends CI_Controller
 	{
 		$this->is_login();
 		$data['page'] = 'all-opportunities';
-		$data['opportunities'] = $this->common->getAll(TBL_JOB, 'id', 'ASC');
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB, ['publish' => 'published'], false, 'id DESC');//$this->common->getAll(TBL_JOB, 'id', 'ASC');
 		// _e($data['opportunities']);exit;
 		// if ($data['opportunities']) {
 		// 	foreach ($data['opportunities'] as $cat) {
@@ -249,7 +249,7 @@ class Admin extends CI_Controller
 	{
 		$this->is_login();
 		$data['page'] = 'all-opportunities-temp';
-		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published']); //_e($data['opportunities']);exit;
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published'], false, 'id DESC'); //_e($data['opportunities']);exit;
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_temp', $data);
@@ -265,7 +265,7 @@ class Admin extends CI_Controller
 			$data_pass = $this->input->post();
 			$data_pass['publish'] = 'edited';
 			// $check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
-			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id']], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
 			// echo "<pre>"; print_r($data_pass);exit;
 			if ($check_temp_req_id) {
@@ -302,7 +302,6 @@ class Admin extends CI_Controller
 						$message_data = $this->load->view('email_template', ['url' => $create_link, 'user' => $user], true);
 						$result_message = htmlspecialchars_decode(htmlspecialchars($message_data));
 						$message = $result_message;
-						// echo "<pre>"; print_r($message);exit;
 						$to_email = $user['email'];
 						$this->load->library('email');
 						$this->email->set_newline("\r\n");
@@ -336,7 +335,6 @@ class Admin extends CI_Controller
 		$this->is_login();
 		if ($this->input->post()) {
 			extract($this->input->post());
-			// echo "<pre>"; print_r($this->input->post());exit;
 			$data_pass = $this->input->post();
 			// $data_pass['publish'] = 'published';
 			$req_id = $data_pass['req_id'];
@@ -388,7 +386,6 @@ class Admin extends CI_Controller
 			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true);
 			unset($get_job_data->id);
 			$get_job_data->publish = 'published';
-			// _e($get_job_data);exit;
 			if ($check_req_id) {
 				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
 				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
@@ -549,93 +546,182 @@ class Admin extends CI_Controller
 	public function data_import()
 	{
 		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
-		$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/Requisitions.csv'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.xlsx';
-		$arr_file = explode('.', $path);
-		$extension = end($arr_file);
-		if ('csv' == $extension) {
-			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-		} elseif ('xls' == $extension) {
-			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
-		} else {
-			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		}
-		$spreadsheet = $reader->load($path);
-		$sheetData = $spreadsheet->getActiveSheet()->toArray();
-		$row = 1;
-		$highestRow = count($sheetData); //_e($sheetData);exit;
-		foreach ($sheetData as $worksheet) {
-			if ($row > 1) {
-				if (strtolower($worksheet[4]) == 'hourly') {
-					$worksheet[4] = 'Staff';
-				} else if (strtolower($worksheet[4]) == 'professional') {
-					$worksheet[4] = 'Faculty';
-				} else if (strtolower($worksheet[4]) == 'executives') {
-					$worksheet[4] = 'Research';
-				}
-				// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
-				$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[10] . '&isOnLogoutPage=true';
-				$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
-				if ($checkid && $checkid->slug) {
-					$slug = $checkid->slug;
-				} else {
-					$slug = uniqid(uniqid());
-				}
-				if ($worksheet[0] == strip_tags($worksheet[0])) {
-
-					// HasBeenApproved => $worksheet[5]
-					$insertData = [
-						'position_code' => $worksheet[10],
-						'requisition_id' => $worksheet[0], //RequisitionNumber
-						'requisition_title' => $worksheet[2], //RequisitionTitle
-						'description_value' => $worksheet[1], //RequisitionDescription
-						'date_posted' => $worksheet[6], //TargetStartDate
-						'status_details' => $worksheet[8], //StatusDetails
-						// 'project_code' => $worksheet[10], //PROJECTCODE
-						'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
-						'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
-						'project_manager_name' => $worksheet[14], //PROJECTMANAGER
-						'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
-						'descriptions' => $worksheet[17], //DescriptionExternalHTML
-						'closing_date' => substr($worksheet[19], 0, strpos($worksheet[19], "T")), //COMPLETION_DATE
-						'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
-						'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
-						'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
-						'recruiter_email' => $worksheet[26], //RecruiterEmail
-						'org_name' => $worksheet[29], //Organization
-						'sector_name' => $worksheet[30], //Sector
-						'division_name' => $worksheet[31], //Division
-						'dept_name' => $worksheet[32], //Department
-						'apply_link' => $apply_link,
-						'publish' => ($worksheet[9] == 'Posted') ? 'published' : '',
-						'slug' => $slug,
-						'category' => $worksheet[4], //Category
-						'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
-						'datetime' => date('Y-m-d H:i:s')
-					];
-					if ($checkid) {
-						$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
-					} else {
-						$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);	
+		$check_import_data_exist = $this->common->getAll(TBL_JOB_TEMP, 'id', 'ASC');
+		if($check_import_data_exist) {
+			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/New_Requisitions.csv';
+			$arr_file = explode('.', $path);
+			$extension = end($arr_file);
+			if ('csv' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+			} elseif ('xls' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+			} else {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			}
+			$spreadsheet = $reader->load($path);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			$row = 1;
+			$highestRow = count($sheetData); //_e($sheetData);exit;
+			foreach ($sheetData as $worksheet) {
+				if ($row > 1) {
+					if (strtolower($worksheet[4]) == 'hourly') {
+						$worksheet[4] = 'Staff';
+					} else if (strtolower($worksheet[4]) == 'professional') {
+						$worksheet[4] = 'Faculty';
+					} else if (strtolower($worksheet[4]) == 'executives') {
+						$worksheet[4] = 'Research';
 					}
-					$checkNewTable = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
-					if($worksheet[9] == 'Posted') {
-						if($checkNewTable) {
-							$inserted_2 = $this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
+					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+					if ($checkid && $checkid->slug) {
+						$slug = $checkid->slug;
+					} else {
+						$slug = uniqid(uniqid());
+					}
+					if ($worksheet[0] == strip_tags($worksheet[0])) {
+
+						// HasBeenApproved => $worksheet[5]
+						$insertData = [
+							'position_code' => $worksheet[10],
+							'requisition_id' => $worksheet[0], //RequisitionNumber
+							'requisition_title' => $worksheet[2], //RequisitionTitle
+							'description_value' => $worksheet[1], //RequisitionDescription
+							'date_posted' => $worksheet[6], //TargetStartDate
+							'status_details' => $worksheet[8], //StatusDetails
+							// 'project_code' => $worksheet[10], //PROJECTCODE
+							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
+							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
+							'project_manager_name' => $worksheet[14], //PROJECTMANAGER
+							'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
+							'descriptions' => $worksheet[17], //DescriptionExternalHTML
+							'closing_date' => $worksheet[19], //COMPLETION_DATE
+							'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
+							'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
+							'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
+							'recruiter_email' => $worksheet[26], //RecruiterEmail
+							'org_name' => $worksheet[29], //Organization
+							'sector_name' => $worksheet[30], //Sector
+							'division_name' => $worksheet[31], //Division
+							'dept_name' => $worksheet[32], //Department
+							'apply_link' => $apply_link,
+							'publish' => '',
+							'slug' => $slug,
+							'category' => $worksheet[4], //Category
+							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
+							'datetime' => date('Y-m-d H:i:s')
+						];
+						if ($checkid) {
+							if($worksheet[9] != 'Posted') {
+								$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
+								if($check_main_job) {
+									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
+								}
+							}
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 						} else {
-							$inserted_2 = $this->db->insert(TBL_JOB, $insertData);
+							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
 						}
 					}
+					// _e($insertData);
 				}
-				// _e($insertData);
+				$row++;
 			}
-			$row++;
-		}
-		if ($inserted) {
-			echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
-			exit;
+			if ($inserted) {
+				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
+				exit;
+			} else {
+				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
+				exit;
+			}
 		} else {
-			echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
-			exit;
+			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/Requisitions.csv'; //$_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.xlsx';
+			$arr_file = explode('.', $path);
+			$extension = end($arr_file);
+			if ('csv' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+			} elseif ('xls' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+			} else {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			}
+			$spreadsheet = $reader->load($path);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			$row = 1;
+			$highestRow = count($sheetData); //_e($sheetData);exit;
+			foreach ($sheetData as $worksheet) {
+				if ($row > 1) {
+					if (strtolower($worksheet[4]) == 'hourly') {
+						$worksheet[4] = 'Staff';
+					} else if (strtolower($worksheet[4]) == 'professional') {
+						$worksheet[4] = 'Faculty';
+					} else if (strtolower($worksheet[4]) == 'executives') {
+						$worksheet[4] = 'Research';
+					}
+					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
+					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+					if ($checkid && $checkid->slug) {
+						$slug = $checkid->slug;
+					} else {
+						$slug = uniqid(uniqid());
+					}
+					if ($worksheet[0] == strip_tags($worksheet[0])) {
+
+						$insertData = [
+							'position_code' => $worksheet[10],
+							'requisition_id' => $worksheet[0], //RequisitionNumber
+							'requisition_title' => $worksheet[2], //RequisitionTitle
+							'description_value' => $worksheet[1], //RequisitionDescription
+							'date_posted' => $worksheet[6], //TargetStartDate
+							'status_details' => $worksheet[8], //StatusDetails
+							// 'project_code' => $worksheet[10], //PROJECTCODE
+							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
+							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
+							'project_manager_name' => $worksheet[14], //PROJECTMANAGER
+							'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
+							'descriptions' => $worksheet[17], //DescriptionExternalHTML
+							'closing_date' => ($worksheet[19]) ? substr($worksheet[19], 0, strpos($worksheet[19], "T")) : '', //COMPLETION_DATE
+							'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
+							'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
+							'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
+							'recruiter_email' => $worksheet[26], //RecruiterEmail
+							'org_name' => $worksheet[29], //Organization
+							'sector_name' => $worksheet[30], //Sector
+							'division_name' => $worksheet[31], //Division
+							'dept_name' => $worksheet[32], //Department
+							'apply_link' => $apply_link,
+							'publish' => ($worksheet[9] == 'Posted') ? 'published' : '',
+							'slug' => $slug,
+							'category' => $worksheet[4], //Category
+							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
+							'datetime' => date('Y-m-d H:i:s')
+						];
+						if ($checkid) {
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+						} else {
+							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);	
+						}
+						$checkNewTable = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+						if($worksheet[9] == 'Posted') {
+							if($checkNewTable) {
+								$inserted_2 = $this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+							} else {
+								$inserted_2 = $this->db->insert(TBL_JOB, $insertData);
+							}
+						}
+					}
+					// _e($insertData);
+				}
+				$row++;
+			}
+			if ($inserted) {
+				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
+				exit;
+			} else {
+				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
+				exit;
+			}
 		}
 	}
 
@@ -699,7 +785,7 @@ class Admin extends CI_Controller
 						'division_name' => $worksheet[31], //Division
 						'dept_name' => $worksheet[32], //Department
 						'apply_link' => $apply_link,
-						'publish' => ($worksheet[9] == 'Posted') ? 'published' : '',
+						'publish' => '',
 						'slug' => $slug,
 						'category' => $worksheet[4], //Category
 						'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',

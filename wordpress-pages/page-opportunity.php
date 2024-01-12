@@ -43,13 +43,13 @@ if (have_posts()) : the_post();
         <div class="wrapper">
             <div class="caption">            
                 <div class="inner">
-                    <h1><?= $opportunities[0]->description_value ?></h1>
+                    <h1><?= preg_replace('/\.\d+/', '', $opportunities[0]->description_value) ?></h1>
                 </div>
             </div>
         </div>
         <div class="breadcrumb">
             <div class="wrapper">
-                <span><a href="<?php echo site_url(); ?>"><?php echo __('Home', 'themedomain') ?></a> | <a href="<?php echo get_the_permalink(75783); ?>"><?php echo get_post_field('post_title', 75783); ?></a> | <?= $opportunities[0]->description_value ?></span>
+                <span><a href="<?php echo site_url(); ?>"><?php echo __('Home', 'themedomain') ?></a> | <a href="<?php echo get_the_permalink(75783); ?>"><?php echo get_post_field('post_title', 75783); ?></a> | <?= preg_replace('/\.\d+/', '', $opportunities[0]->description_value) ?></span>
             </div></div>
     </div>
 
@@ -57,15 +57,15 @@ if (have_posts()) : the_post();
         <div class="wrapper"> 
             <div class="first_blk">
                 <div class="blks">
-                    <?php if ($opportunities[0]->requisition_id) { ?>
+                    <?php if ($opportunities[0]->position_code) { ?>
                         <div class="blk blk-2 clear">
                             <div class="left_blk inner"><h4>Position Code</h4></div>
-                            <div class="right_blk inner"><p><?= $opportunities[0]->requisition_id ?></p></div> <!-- change -->
+                            <div class="right_blk inner"><p><?= $opportunities[0]->position_code ?></p></div> <!-- change -->
                         </div>
                     <?php } if ($opportunities[0]->description_value) { ?>
                         <div class="blk blk-4 clear">
                             <div class="left_blk inner"><h4>Position Title</h4></div>
-                            <div class="right_blk inner"><p><?= $opportunities[0]->description_value ?></p></div>
+                            <div class="right_blk inner"><p><?= preg_replace('/\.\d+/', '', $opportunities[0]->description_value) ?></p></div>
                         </div>
                     <?php } if ($opportunities[0]->hiring_manager_name) {
                         if($opportunities[0]->category == 'Research') { ?>
@@ -79,15 +79,15 @@ if (have_posts()) : the_post();
                             <div class="left_blk inner"><h4>Department</h4></div>
                             <div class="right_blk inner"><p><?= $opportunities[0]->dept_name ?></p></div> <!-- change -->
                         </div>
-                    <?php } } if ($opportunities[0]->closing_date) { ?>
-                        <div class="blk blk-9 clear">
-                            <div class="left_blk inner"><h4>Closing Date</h4></div>
-                            <div class="right_blk inner"><p><?= $opportunities[0]->closing_date ?></p></div>
-                        </div>
-                    <?php } if ($opportunities[0]->years_of_experience) { ?>
+                    <?php } } if ($opportunities[0]->years_of_experience) { ?>
                         <div class="blk blk-9 clear">
                             <div class="left_blk inner"><h4>Years of Experience</h4></div>
                             <div class="right_blk inner"><p><?= $opportunities[0]->years_of_experience ?></p></div>
+                        </div>
+                    <?php } if ($opportunities[0]->closing_date) { ?>
+                        <div class="blk blk-9 clear">
+                            <div class="left_blk inner"><h4>Closing Date</h4></div>
+                            <div class="right_blk inner"><p><?= date("d F Y", strtotime($opportunities[0]->closing_date)) ?></p></div>
                         </div>
                     <?php } ?>
                 </div>
@@ -111,9 +111,11 @@ if (have_posts()) : the_post();
                 <br class="px-10">
                 <?= $opportunities[0]->descriptions ?>
                 <br class="px-40">
-                <!-- <h2>Qualifications</h2>
-                <br class="px-10"> -->
-                <?php // $opportunities[0]->qualifications ?>
+                <?php if($opportunities[0]->qualifications) { ?>
+                <h2>Qualifications</h2>
+                <br class="px-10">
+                <?= $opportunities[0]->qualifications ?>
+                <?php } ?>
             </div>
 
             <br class="px-60">

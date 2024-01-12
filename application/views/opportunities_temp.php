@@ -15,11 +15,11 @@
             <th>Category</th>
             <th>Position Code</th>
             <th>Position Title</th>
-            <th>Division - Name</th>
             <th>Department - Name</th>
             <th>Recruiter</th>
             <th>Hiring Manager</th>
             <th>Closing date</th>
+            <th>Imported Date</th>
             <th>Publish</th>
         </tr>
         <?php
@@ -36,11 +36,11 @@
                     <td><?php echo $row->category; ?></td>
                     <td><?php echo $row->position_code; ?></td>
                     <td style="width: 20%;"><?php echo $row->description_value; ?></td>
-                    <td><?php echo $row->division_name; ?></td>
                     <td><?php echo $row->dept_name; ?></td>
                     <td><?php echo $row->recruiter_name ?></td>
                     <td><?php echo $row->hiring_manager_name ?></td>
                     <td><?php echo $row->closing_date ?></td>
+                    <td><?php echo date("Y-m-d", strtotime($row->datetime)); ?></td>
                     <td>
                         <?php if ($row->publish == 'published') { ?>
                             <span>Published</span>
