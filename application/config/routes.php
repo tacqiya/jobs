@@ -28,3 +28,4 @@ $route[ADMIN_URL .'/opportunities-temp'] = 'admin/opportunity_temp';
 $route[ADMIN_URL .'/edit-opportunity-temp/(:num)'] = 'admin/edit_opprotunity_temp/$1';
 
 $route[ADMIN_URL .'/publish-opportunity'] = 'admin/publish_opportunity';
+$route[ADMIN_URL .'/post-updates'] = 'admin/post_updates';

@@ -96,3 +96,4 @@ define('TBL_CAREER', 'khpu_career_opportunities');
 define('TBL_CATEGORY', 'khpu_opportunity_categories'); 
 define('TBL_JOB', 'khpu_career_job'); 
 define('TBL_JOB_TEMP', 'khpu_career_job_temp'); 
+define('TBL_TALEO', 'khpu_career_updates'); 

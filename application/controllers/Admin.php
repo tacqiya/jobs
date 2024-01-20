@@ -152,6 +152,14 @@ class Admin extends CI_Controller
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
+			$taleoData = [
+				'updated_batch' => 'no',
+				'updated_method' => 'New post',
+				'update_status' => 'New post added with position code '.$data_pass['position_code'],
+				'updated_table' => TBL_JOB_TEMP,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
 		}
 
 		$data['page'] = 'add-opportunity';
@@ -234,6 +242,16 @@ class Admin extends CI_Controller
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
+			$array1 = (array) $check_temp_req_id; 
+			$removedKeyValuePairs = array_diff_assoc($data_pass, $array1);
+			$taleoData = [
+				'updated_batch' => 'no',
+				'updated_method' => 'Published post edited',
+				'update_status' => 'For '.$data_pass['position_code'].' the data for '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed',
+				'updated_table' => TBL_JOB_TEMP,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
 		}
 		$data['page'] = 'edit-opportunity';
 		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
@@ -274,6 +292,17 @@ class Admin extends CI_Controller
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 			}
 			if ($updated) {
+				$array1 = (array) $check_temp_req_id; 
+				$removedKeyValuePairs = array_diff_assoc($data_pass, $array1);
+				$taleoData = [
+					'updated_batch' => 'no',
+					'updated_method' => 'Unpublished post edited',
+					'update_status' => 'For '.$data_pass['position_code'].' the data for '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed',
+					'updated_table' => TBL_JOB_TEMP,
+					'datetime' => date('Y-m-d H:i:s')
+				];
+				$this->taleo_updates($taleoData);
+
 				if ($data_pass['category'] == "Staff") {
 					$email_send = TRUE;
 					$user_send_data = [
@@ -344,11 +373,16 @@ class Admin extends CI_Controller
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $req_id], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $req_id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
-			$data_pass['publish'] = 'published';
+			if($data_pass['status_details'] != 'Posted') {
+				$data_pass['publish'] = '';
+			} else {
+				$data_pass['publish'] = 'published';
+			}
 			$data_pass['requisition_id'] = $req_id;
 			$data_pass['position_code'] = $pos_code;
 			unset($data_pass['id']);
-			// echo "<pre>"; print_r($data_pass); exit;
+			
+			// echo "<pre>"; print_r(array_keys($removedKeyValuePairs)); exit;
 			if ($check_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $req_id), $data_pass);
@@ -356,6 +390,16 @@ class Admin extends CI_Controller
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 				$inserted = $this->db->insert(TBL_JOB, $data_pass);
 			}
+			$array1 = (array) $check_req_id; 
+			$removedKeyValuePairs = array_diff_assoc($data_pass, $array1);
+			$taleoData = [
+				'updated_batch' => 'no',
+				'updated_method' => 'Post Published',
+				'update_status' => 'For '.$pos_code.' the data for '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed',
+				'updated_table' => TBL_JOB_TEMP.', '.TBL_JOB ,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
 			if ($inserted) {
 				echo json_encode(array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.'));
 			} else {
@@ -371,8 +415,17 @@ class Admin extends CI_Controller
 			if ($this->input->post()) {
 				$id = $this->input->post('id');
 				$table = $this->input->post('cat');
+				$get_data = $this->common->getWhere($table, ['id' => $id], true);
 				$data = $this->db->delete($table, array('id' => $id));
 				// $data = $this->admin->dlt($table, $id);
+				$taleoData = [
+					'updated_batch' => 'no',
+					'updated_method' => 'Removed post',
+					'update_status' => $get_data->position_code.' is removed',
+					'updated_table' => $table,
+					'datetime' => date('Y-m-d H:i:s')
+				];
+				$this->taleo_updates($taleoData);
 			}
 		}
 		$this->output->set_content_type('application/json');
@@ -385,14 +438,28 @@ class Admin extends CI_Controller
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $formData['dataid']], true);
 			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $formData['dataid']], true);
 			unset($get_job_data->id);
-			$get_job_data->publish = 'published';
+			// echo "<pre>"; print_r($get_job_data);exit;
+			if($get_job_data->status_details == 'Posted') {
+				$get_job_data->publish = 'published';
+				$publish_ = 'published';
+			} else {
+				$publish_ = '';
+			}
 			if ($check_req_id) {
 				$updateQuery = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $formData['dataid']), $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => $publish_));
 			} else {
 				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => 'published'));
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('requisition_id' => $formData['dataid']), array('publish' => $publish_));
 			}
+			$taleoData = [
+				'updated_batch' => 'no',
+				'updated_method' => 'Post Published in temporary updated jobs',
+				'update_status' => $get_job_data->position_code.' is published from ALL TEMPORARY UPDATED JOBS table.',
+				'updated_table' => TBL_JOB.', '.TBL_JOB_TEMP,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
 			echo json_encode(['success' => true]);
 		}
 	}
@@ -562,6 +629,7 @@ class Admin extends CI_Controller
 			$sheetData = $spreadsheet->getActiveSheet()->toArray();
 			$row = 1;
 			$highestRow = count($sheetData); //_e($sheetData);exit;
+			$taleoTempArray = [];
 			foreach ($sheetData as $worksheet) {
 				if ($row > 1) {
 					if (strtolower($worksheet[4]) == 'hourly') {
@@ -573,7 +641,7 @@ class Admin extends CI_Controller
 					}
 					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
 					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
-					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
 					if ($checkid && $checkid->slug) {
 						$slug = $checkid->slug;
 					} else {
@@ -588,7 +656,7 @@ class Admin extends CI_Controller
 							'requisition_title' => $worksheet[2], //RequisitionTitle
 							'description_value' => $worksheet[1], //RequisitionDescription
 							'date_posted' => $worksheet[6], //TargetStartDate
-							'status_details' => $worksheet[8], //StatusDetails
+							'status_details' => $worksheet[9], //StatusDetails
 							// 'project_code' => $worksheet[10], //PROJECTCODE
 							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
 							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
@@ -611,22 +679,57 @@ class Admin extends CI_Controller
 							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
 							'datetime' => date('Y-m-d H:i:s')
 						];
+						
 						if ($checkid) {
 							if($worksheet[9] != 'Posted') {
-								$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
+								$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
 								if($check_main_job) {
-									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
+									$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], ['publish' => '']);
 								}
+							} else {
+								$insertData['publish'] = 'published';
+								$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
 							}
-							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+
+							$array1 = (array) $checkid; 
+							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
+							$tempData = 'For '.$insertData['position_code'].' the data for '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
 						} else {
-							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// $check_current_data_temp = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+							// $check_current_data = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+
+							// if($check_current_data_temp) {
+							// 	$this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+							// } else {
+								// $inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// }
+							
+							// if($worksheet[9] == 'Posted') {
+							// 	$insertData['publish'] = 'published';
+							// 	$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// 	$inserted = $this->db->insert(TBL_JOB, $insertData);
+							// } else {
+								$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// }
+
+							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
 						}
+						array_push($taleoTempArray, $tempData);
 					}
 					// _e($insertData);
 				}
 				$row++;
 			}
+			$dataUpdate = serialize($taleoTempArray);
+			$taleoData = [
+				'updated_batch' => 'yes',
+				'updated_method' => 'Taleo update',
+				'update_status' => $dataUpdate,
+				'updated_table' => TBL_JOB.', '.TBL_JOB_TEMP,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
 			if ($inserted) {
 				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
 				exit;
@@ -674,7 +777,7 @@ class Admin extends CI_Controller
 							'requisition_title' => $worksheet[2], //RequisitionTitle
 							'description_value' => $worksheet[1], //RequisitionDescription
 							'date_posted' => $worksheet[6], //TargetStartDate
-							'status_details' => $worksheet[8], //StatusDetails
+							'status_details' => $worksheet[9], //StatusDetails
 							// 'project_code' => $worksheet[10], //PROJECTCODE
 							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
 							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
@@ -808,5 +911,27 @@ class Admin extends CI_Controller
 			echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
 			exit;
 		}
+	}
+
+	protected function taleo_updates($insertData) {
+		// $taleoData = [
+		// 	'updated_batch' => '',
+		// 	'updated_method' => '',
+		// 	'update_status' => '',
+		// 	'updated_table' => '',
+		// 	'datetime' => date('Y-m-d H:i:s')
+		// ];
+		$inserted = $this->db->insert(TBL_TALEO, $insertData);
+	}
+
+	public function post_updates() {
+		$this->is_login();
+		$data['page'] = 'post-updates';
+		$data['updates'] = $this->common->getAll(TBL_TALEO, 'id', 'ASC');
+		// _e($data);
+		$this->load->view('elements/header', $data);
+		$this->load->view('elements/sidebar', $data);
+		$this->load->view('post_updates', $data);
+		$this->load->view('elements/footer', $data);
 	}
 }

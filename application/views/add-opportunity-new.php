@@ -121,6 +121,13 @@
         </div>
         <div class="form-group clear">
             <label>Status Details</label>
+            <select class="input-field" name="status_details" id="status_details">
+                <option value="Open">Open</option>
+                <option value="Expired">Expired</option>
+                <option value="Unposted">Unposted</option>
+                <option value="Posted">Posted</option>
+                <option value="Canceled">Canceled</option>
+            </select>
             <input class="input-field" type="text" name="status_details" />
         </div>
 

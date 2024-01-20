@@ -121,7 +121,13 @@
         </div>
         <div class="form-group clear">
             <label>Status Details</label>
-            <input class="input-field" type="text" name="status_details" value="<?= $opportunity->status_details ?>" />
+            <select class="input-field" name="status_details" id="status_details">
+                <option value="Open" <?= ($opportunity->status_details == 'Open') ? 'selected' : ''; ?>>Open</option>
+                <option value="Expired" <?= ($opportunity->status_details == 'Expired') ? 'selected' : ''; ?>>Expired</option>
+                <option value="Unposted" <?= ($opportunity->status_details == 'Unposted') ? 'selected' : ''; ?>>Unposted</option>
+                <option value="Posted" <?= ($opportunity->status_details == 'Posted') ? 'selected' : ''; ?>>Posted</option>
+                <option value="Canceled" <?= ($opportunity->status_details == 'Canceled') ? 'selected' : ''; ?>>Canceled</option>
+            </select>
         </div>
 
         <div class="form-group clear">
@@ -166,7 +172,12 @@
     });
 
     CKEDITOR.replace('qualifications', {
-        plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
+        plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format,autogrow',
+        extraPlugins: 'autogrow',
+	autoGrow_maxHeight: 800,
+
+	// Remove the Resize plugin as it does not make sense to use it in conjunction with the AutoGrow plugin.
+	removePlugins: 'resize'
     }).on('required', function(evt) {
         $('#error1').fadeIn();
         evt.cancel();
