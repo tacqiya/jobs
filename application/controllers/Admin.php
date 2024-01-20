@@ -230,15 +230,23 @@ class Admin extends CI_Controller
 			$data_pass = $this->input->post();
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
 			// echo "<pre>"; print_r($check_req_id);exit;
-			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $check_req_id->requisition_id], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $check_req_id->position_code], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
 			$data_pass['publish'] = 'edited';
-			$temp_opport = $this->common->getRowBy(TBL_JOB_TEMP, 'requisition_id', $check_temp_req_id->requisition_id);
+			$temp_opport = $this->common->getRowBy(TBL_JOB_TEMP, 'position_code', $check_temp_req_id->position_code);
 			// echo "<pre>"; print_r($check_temp_req_id);exit;
-			$this->db->update(TBL_JOB_TEMP, $data_pass, array('requisition_id' => $check_temp_req_id->requisition_id));
+			if($data_pass['status_details'] != 'Posted') {
+				$this->db->update(TBL_JOB_TEMP, $data_pass, array('position_code' => $check_temp_req_id->position_code));
+				$this->db->update(TBL_JOB, ['publish' => ''], array('position_code' => $check_req_id->position_code));
+			} else {
+				$data_pass['publish'] = 'published';
+				$this->db->update(TBL_JOB, $data_pass, array('position_code' => $check_req_id->position_code));
+			}
 			if ($this->db->trans_status()) {
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
-				$data['url'] = base_url() . ADMIN_URL . '/edit-opportunity-temp/' . $check_temp_req_id->id;
+				if($data_pass['status_details'] != 'Posted') {
+					$data['url'] = base_url() . ADMIN_URL . '/edit-opportunity-temp/' . $check_temp_req_id->id;
+				}
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
@@ -382,12 +390,13 @@ class Admin extends CI_Controller
 			$data_pass['position_code'] = $pos_code;
 			unset($data_pass['id']);
 			
-			// echo "<pre>"; print_r(array_keys($removedKeyValuePairs)); exit;
+			// echo "<pre>"; print_r($data_pass); exit;
 			if ($check_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
 				$inserted = $this->common->updateQuery(TBL_JOB, array('requisition_id' => $req_id), $data_pass);
 			} else {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
+				$data_pass['datetime'] = $check_temp_req_id->datetime;
 				$inserted = $this->db->insert(TBL_JOB, $data_pass);
 			}
 			$array1 = (array) $check_req_id; 
