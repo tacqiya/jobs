@@ -29,7 +29,7 @@
                         <td><?php echo $row->update_status; ?></td>
                     <?php } ?>
                     <td><?php echo $row->updated_table; ?></td>
-                    <td><?php echo date('Y-m-d', strtotime($row->datetime)); ?></td>
+                    <td><?php echo date('Y-m-d h:i:s a', strtotime($row->datetime)); ?></td>
                 </tr>
                 <?php
                 $x++;

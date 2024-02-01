@@ -229,6 +229,7 @@ class Admin extends CI_Controller
 
 			$data_pass = $this->input->post();
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
+			$data_pass['position_code'] = $check_req_id->position_code;
 			// echo "<pre>"; print_r($check_req_id);exit;
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $check_req_id->position_code], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
@@ -293,6 +294,7 @@ class Admin extends CI_Controller
 			// $check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
+			$data_pass['position_code'] = $check_temp_req_id->position_code;
 			// echo "<pre>"; print_r($data_pass);exit;
 			if ($check_temp_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
@@ -625,6 +627,14 @@ class Admin extends CI_Controller
 		$check_import_data_exist = $this->common->getAll(TBL_JOB_TEMP, 'id', 'ASC');
 		if($check_import_data_exist) {
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/New_Requisitions.csv';
+			$taleoDatainit = [
+				'updated_batch' => 'no',
+				'updated_method' => 'Cronjob Run',
+				'update_status' => 'initial run',
+				'updated_table' => 'no table',
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoDatainit);
 			$arr_file = explode('.', $path);
 			$extension = end($arr_file);
 			if ('csv' == $extension) {
@@ -690,14 +700,20 @@ class Admin extends CI_Controller
 						];
 						
 						if ($checkid) {
+							$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
 							if($worksheet[9] != 'Posted') {
-								$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
 								if($check_main_job) {
 									$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], ['publish' => '']);
 								}
 							} else {
-								$insertData['publish'] = 'published';
-								$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+								if($check_main_job) {
+									if($check_main_job->status_details != 'Posted') {
+										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+									} else {
+										$insertData['publish'] = 'published';
+										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+									}
+								}
 							}
 							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
 
@@ -740,6 +756,14 @@ class Admin extends CI_Controller
 			];
 			$this->taleo_updates($taleoData);
 			if ($inserted) {
+				$taleoDataFinal = [
+					'updated_batch' => 'no',
+					'updated_method' => 'Cronjob End',
+					'update_status' => 'Finish run',
+					'updated_table' => 'no table',
+					'datetime' => date('Y-m-d H:i:s')
+				];
+				$this->taleo_updates($taleoDataFinal);
 				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
 				exit;
 			} else {
@@ -936,11 +960,159 @@ class Admin extends CI_Controller
 	public function post_updates() {
 		$this->is_login();
 		$data['page'] = 'post-updates';
-		$data['updates'] = $this->common->getAll(TBL_TALEO, 'id', 'ASC');
+		$data['updates'] = $this->common->getAll(TBL_TALEO, 'id', 'DESC');
 		// _e($data);
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('post_updates', $data);
 		$this->load->view('elements/footer', $data);
+	}
+
+	public function manual_import()
+	{
+			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/req.csv';
+			$taleoDatainit = [
+				'updated_batch' => 'no',
+				'updated_method' => 'Manual Run',
+				'update_status' => 'initial run',
+				'updated_table' => 'no table',
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoDatainit);
+			$arr_file = explode('.', $path);
+			$extension = end($arr_file);
+			if ('csv' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+			} elseif ('xls' == $extension) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+			} else {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			}
+			$spreadsheet = $reader->load($path);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			$row = 1;
+			$highestRow = count($sheetData); //_e($sheetData);exit;
+			$taleoTempArray = [];
+			foreach ($sheetData as $worksheet) {
+				if ($row > 1) {
+					if (strtolower($worksheet[4]) == 'hourly') {
+						$worksheet[4] = 'Staff';
+					} else if (strtolower($worksheet[4]) == 'professional') {
+						$worksheet[4] = 'Faculty';
+					} else if (strtolower($worksheet[4]) == 'executives') {
+						$worksheet[4] = 'Research';
+					}
+					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
+					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+					if ($checkid && $checkid->slug) {
+						$slug = $checkid->slug;
+					} else {
+						$slug = uniqid(uniqid());
+					}
+					if ($worksheet[0] == strip_tags($worksheet[0])) {
+
+						// HasBeenApproved => $worksheet[5]
+						$insertData = [
+							'position_code' => $worksheet[10],
+							'requisition_id' => $worksheet[0], //RequisitionNumber
+							'requisition_title' => $worksheet[2], //RequisitionTitle
+							'description_value' => $worksheet[1], //RequisitionDescription
+							'date_posted' => $worksheet[6], //TargetStartDate
+							'status_details' => $worksheet[9], //StatusDetails
+							// 'project_code' => $worksheet[10], //PROJECTCODE
+							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
+							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
+							'project_manager_name' => $worksheet[14], //PROJECTMANAGER
+							'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
+							'descriptions' => $worksheet[17], //DescriptionExternalHTML
+							'closing_date' => $worksheet[19], //COMPLETION_DATE
+							'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
+							'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
+							'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
+							'recruiter_email' => $worksheet[26], //RecruiterEmail
+							'org_name' => $worksheet[29], //Organization
+							'sector_name' => $worksheet[30], //Sector
+							'division_name' => $worksheet[31], //Division
+							'dept_name' => $worksheet[32], //Department
+							'apply_link' => $apply_link,
+							'publish' => '',
+							'slug' => $slug,
+							'category' => $worksheet[4], //Category
+							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
+							'datetime' => date('Y-m-d H:i:s')
+						];
+						
+						if ($checkid) {
+							$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+							if($worksheet[9] != 'Posted') {
+								if($check_main_job) {
+									$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], ['publish' => '']);
+								}
+							} else {
+								if($check_main_job) {
+									if($check_main_job->status_details != 'Posted') {
+										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+									} else {
+										$insertData['publish'] = 'published';
+										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+									}
+								}
+							}
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+
+							$array1 = (array) $checkid; 
+							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
+							$tempData = 'For '.$insertData['position_code'].' the data for '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
+						} else {
+							// $check_current_data_temp = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+							// $check_current_data = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+
+							// if($check_current_data_temp) {
+							// 	$this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+							// } else {
+								// $inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// }
+							
+							// if($worksheet[9] == 'Posted') {
+							// 	$insertData['publish'] = 'published';
+							// 	$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// 	$inserted = $this->db->insert(TBL_JOB, $insertData);
+							// } else {
+								$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
+							// }
+
+							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
+						}
+						array_push($taleoTempArray, $tempData);
+					}
+					// _e($insertData);
+				}
+				$row++;
+			}
+			$dataUpdate = serialize($taleoTempArray);
+			$taleoData = [
+				'updated_batch' => 'yes',
+				'updated_method' => 'Taleo update',
+				'update_status' => $dataUpdate,
+				'updated_table' => TBL_JOB.', '.TBL_JOB_TEMP,
+				'datetime' => date('Y-m-d H:i:s')
+			];
+			$this->taleo_updates($taleoData);
+			if ($inserted) {
+				$taleoDataFinal = [
+					'updated_batch' => 'no',
+					'updated_method' => 'Manual run End',
+					'update_status' => 'Finish run',
+					'updated_table' => 'no table',
+					'datetime' => date('Y-m-d H:i:s')
+				];
+				$this->taleo_updates($taleoDataFinal);
+				echo json_encode(array('error' => false, 'message' => 'Data successfully imported'));
+				exit;
+			} else {
+				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
+				exit;
+			}
 	}
 }
