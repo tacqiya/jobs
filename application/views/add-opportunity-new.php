@@ -13,9 +13,9 @@
 
             </select>
         </div>
-        <div class="form-group clear" >
+        <div class="form-group clear" style="display: none;" >
             <label>College</label>
-            <select class="input-field" name="college" id="college">
+            <select class="input-field" name="college" id="college" disabled>
                 <option value="">Select College</option>
                 <option value="College of Engineering">College of Engineering</option>
                 <option value="College of Arts and Science">College of Arts and Science</option>
@@ -128,7 +128,6 @@
                 <option value="Posted">Posted</option>
                 <option value="Canceled">Canceled</option>
             </select>
-            <input class="input-field" type="text" name="status_details" />
         </div>
 
         <div class="form-group clear">
@@ -168,6 +167,12 @@
     }).on('required', function(evt) {
         $('#error1').fadeIn();
         evt.cancel();
+    });
+
+    $("input[name='requisition_id']").on("input", function() {
+        var getLink = $(this).val();
+        var apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' + getLink + '&isOnLogoutPage=true';
+        $("input[name='apply_link']").val(apply_link);
     });
 
     $("#category").on("change", function() {

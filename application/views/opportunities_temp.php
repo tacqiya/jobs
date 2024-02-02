@@ -45,7 +45,7 @@
                         <?php if ($row->publish == 'published') { ?>
                             <span>Published</span>
                         <?php } else { ?>
-                            <button class="btn btn-info publish-btn" data-id="<?= $row->requisition_id ?>">Publish</button>
+                            <button class="btn btn-info publish-btn" data-id="<?= $row->position_code ?>">Publish</button>
                         <?php } ?>
                     </td>
                 </tr>
