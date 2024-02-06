@@ -116,8 +116,8 @@
             <input class="input-field" type="text" name="project_auth_name" />
         </div>
         <div class="form-group clear">
-            <label>Closing Date</label>
-            <input class="input-field" type="text" name="closing_date" />
+            <label>Closing Date <span class="text-danger text-bold" title="Mandatory">*</span></label>
+            <input class="input-field" type="text" name="closing_date" required/>
         </div>
         <div class="form-group clear">
             <label>Status Details</label>

@@ -226,8 +226,8 @@
 
     $('#publish-btn').on('click', function() {
         let id = <?= $opportunity->id ?>;
-        let req_id = <?= $opportunity->requisition_id ?>;
-        let pos_code = <?= $opportunity->position_code ?>;
+        let req_id = '<?= $opportunity->requisition_id ?>';
+        let pos_code = '<?= $opportunity->position_code ?>';
         var fd = $('#form').serializeArray();
         fd.push({
             name: 'id',

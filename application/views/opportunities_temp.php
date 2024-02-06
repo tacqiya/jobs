@@ -68,9 +68,15 @@
             data: {
                 dataid: id
             }
-        }).done(function(msg) {
+        }).done(function(msg) { console.log(msg.success)
             $(".publish-btn[data-id='" + id +"']").replaceWith('<span>Published</span>');
             $(".table").load(location.href + " .table");
+            $('body').append('<div class="new-alert success">'+ id +' has been published.</div>');
+            setTimeout(function() {
+                $(".new-alert").hide();
+                $(".new-alert").remove();
+                window.location.reload();
+            }, 2000);
         });
     });
 </script>

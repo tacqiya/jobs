@@ -390,11 +390,8 @@ class Admin extends CI_Controller
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['position_code' => $pos_code], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $pos_code], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
-			if($data_pass['status_details'] != 'Posted') {
-				$data_pass['publish'] = '';
-			} else {
-				$data_pass['publish'] = 'published';
-			}
+			$data_pass['status_details'] = 'Posted';
+			$data_pass['publish'] = 'published';
 			$data_pass['requisition_id'] = $req_id;
 			$data_pass['position_code'] = $pos_code;
 			unset($data_pass['id']);
@@ -460,12 +457,10 @@ class Admin extends CI_Controller
 			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $formData['dataid']], true);
 			unset($get_job_data->id);
 			// echo "<pre>"; print_r($get_job_data);exit;
-			if($get_job_data->status_details == 'Posted') {
-				$get_job_data->publish = 'published';
-				$publish_ = 'published';
-			} else {
-				$publish_ = '';
-			}
+
+			$get_job_data->status_details = 'Posted';
+			$get_job_data->publish = 'published';
+			$publish_ = 'published';
 			if ($check_req_id) {
 				$updateQuery = $this->common->updateQuery(TBL_JOB, array('position_code' => $formData['dataid']), $get_job_data);
 				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('position_code' => $formData['dataid']), array('publish' => $publish_));
