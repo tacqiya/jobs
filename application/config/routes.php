@@ -31,3 +31,8 @@ $route[ADMIN_URL .'/publish-opportunity'] = 'admin/publish_opportunity';
 $route[ADMIN_URL .'/post-updates'] = 'admin/post_updates';
 
 $route[ADMIN_URL . '/manual-import'] = 'admin/manual_import';
+
+
+// DEMO
+$route[ADMIN_URL . '/demo-unpublished'] = 'Demo';
+$route[ADMIN_URL . '/demo-published'] = 'Demo/published';
