@@ -144,16 +144,25 @@ class Admin extends CI_Controller
 			extract($this->input->post());
 
 			$data_pass = $this->input->post(); //echo "<pre>"; print_r($data_pass);exit;
-			$data_pass['slug'] = uniqid(uniqid());
-			$data_pass['publish'] = '';
-			$data_pass['datetime'] = date('Y-m-d H:i:s');
-
-			$this->db->insert(TBL_JOB_TEMP, $data_pass);
-			if ($this->db->trans_status()) {
-				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been added successfully.');
+			$checkReqID = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $data_pass['requisition_id'],], true);
+			if($checkReqID) {
+				if($checkReqID->publish != 'deleted') {
+					echo json_encode(array('type' => 'error', 'msg' => 'Requisition ID you have entered is already existing'));
+					exit;
+				} else {
+					$data_pass['publish'] = 'edited';
+					$data_pass['datetime'] = date('Y-m-d H:i:s');
+					$inserted = $this->common->updateQuery(TBL_JOB_TEMP, array('id' => $checkReqID->id), $data_pass);
+					$url = $checkReqID->id;
+				}
 			} else {
-				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
+				$data_pass['slug'] = uniqid(uniqid());
+				$data_pass['publish'] = 'edited';
+				$data_pass['datetime'] = date('Y-m-d H:i:s');
+				$inserted = $this->common->insert(TBL_JOB_TEMP, $data_pass);
+				$url = $inserted;
 			}
+			
 			$taleoData = [
 				'updated_batch' => 'no',
 				'updated_method' => 'New post',
@@ -162,6 +171,14 @@ class Admin extends CI_Controller
 				'datetime' => date('Y-m-d H:i:s')
 			];
 			$this->taleo_updates($taleoData);
+
+			if ($inserted) {
+				echo json_encode(array('type' => 'success', 'msg' => 'Opportunity has been added successfully.', 'url' => base_url() . ADMIN_URL . '/edit-opportunity-temp/' . $url));
+				exit;
+			} else {
+				echo json_encode(array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!'));
+				exit;
+			}
 		}
 
 		$data['page'] = 'add-opportunity';
@@ -203,20 +220,6 @@ class Admin extends CI_Controller
 		$data['page'] = 'all-opportunities';
 		$data['opportunities'] = $this->common->getWhere(TBL_JOB, ['publish' => 'published'], false, 'id DESC');//$this->common->getAll(TBL_JOB, 'id', 'ASC');
 		// _e($data['opportunities']);exit;
-		// if ($data['opportunities']) {
-		// 	foreach ($data['opportunities'] as $cat) {
-		// 		if ($cat->category != 0) {
-		// 			$get_category = $this->common->getRowBy(TBL_CATEGORY, 'id', $cat->category);
-		// 			if ($get_category) {
-		// 				$cat->category = $get_category->title;
-		// 			} else {
-		// 				$cat->category = '';
-		// 			}
-		// 		} else {
-		// 			$cat->parent = '';
-		// 		}
-		// 	}
-		// }
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_new', $data);
@@ -231,20 +234,20 @@ class Admin extends CI_Controller
 
 			$data_pass = $this->input->post();
 			$check_req_id = $this->common->getWhere(TBL_JOB, ['id' => $id], true);
-			$data_pass['position_code'] = $check_req_id->position_code;
-			// echo "<pre>"; print_r($check_req_id);exit;
-			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $check_req_id->position_code], true);
+			// $data_pass['position_code'] = $check_req_id->position_code;
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $check_req_id->temp_key_id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
-			$data_pass['publish'] = 'edited';
-			$temp_opport = $this->common->getRowBy(TBL_JOB_TEMP, 'position_code', $check_temp_req_id->position_code);
-			// echo "<pre>"; print_r($check_temp_req_id);exit;
-			if($data_pass['status_details'] != 'Posted') {
-				$this->db->update(TBL_JOB_TEMP, $data_pass, array('position_code' => $check_temp_req_id->position_code));
-				$this->db->update(TBL_JOB, ['publish' => ''], array('position_code' => $check_req_id->position_code));
-			} else {
+			// _e($check_temp_req_id);exit;
+
+			if($data_pass['status_details'] == 'Posted') {
 				$data_pass['publish'] = 'published';
-				$this->db->update(TBL_JOB, $data_pass, array('position_code' => $check_req_id->position_code));
+				$this->db->update(TBL_JOB, $data_pass, array('id' => $id));
+			} else {
+				$data_pass['publish'] = 'edited';
+				$this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $check_temp_req_id->id));
+				$this->db->update(TBL_JOB, ['publish' => ''], array('id' => $id));
 			}
+
 			if ($this->db->trans_status()) {
 				$data['result'] = array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.');
 				if($data_pass['status_details'] != 'Posted') {
@@ -253,6 +256,8 @@ class Admin extends CI_Controller
 			} else {
 				$data['result'] = array('type' => 'error', 'msg' => 'There is something wrong. Please try again..!');
 			}
+
+			/*Record Update START*/
 			$array1 = (array) $check_temp_req_id; 
 			$removedKeyValuePairs = array_diff_assoc($data_pass, $array1);
 			if($removedKeyValuePairs) {
@@ -260,11 +265,12 @@ class Admin extends CI_Controller
 					'updated_batch' => 'no',
 					'updated_method' => 'Published post edited',
 					'update_status' => $data_pass['position_code'].' -> '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed',
-					'updated_table' => TBL_JOB_TEMP,
+					'updated_table' => TBL_JOB_TEMP.', '.TBL_JOB,
 					'datetime' => date('Y-m-d H:i:s')
 				];
 				$this->taleo_updates($taleoData);
 			}
+			/*Record Update END*/
 		}
 		$data['page'] = 'edit-opportunity';
 		$data['category'] = $this->common->getAll(TBL_CATEGORY, 'id', 'ASC');
@@ -281,7 +287,7 @@ class Admin extends CI_Controller
 		$this->is_login();
 		$data['page'] = 'all-opportunities-temp';
 		// $data['opportunities'] = $this->common->getAll(TBL_JOB_TEMP, 'id', 'DESC');
-		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published'], false, 'id DESC'); //_e($this->db->last_query());exit;
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published', 'publish !=' => 'deleted'], false, 'id DESC'); //_e($this->db->last_query());exit;
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_temp', $data);
@@ -299,7 +305,7 @@ class Admin extends CI_Controller
 			// $check_req_id = $this->common->getWhere(TBL_JOB, ['requisition_id' => $data_pass['requisition_id']], true);
 			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
-			$data_pass['position_code'] = $check_temp_req_id->position_code;
+			// $data_pass['position_code'] = $check_temp_req_id->position_code;
 			// echo "<pre>"; print_r($data_pass);exit;
 			if ($check_temp_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
@@ -382,29 +388,37 @@ class Admin extends CI_Controller
 		if ($this->input->post()) {
 			extract($this->input->post());
 			$data_pass = $this->input->post();
-			// $data_pass['publish'] = 'published';
+			// _e($data_pass);exit;
+			$id = $data_pass['id'];
 			$req_id = $data_pass['req_id'];
 			$pos_code = $data_pass['pos_code'];
+			unset($data_pass['id']);
 			unset($data_pass['req_id']);
 			unset($data_pass['pos_code']);
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['position_code' => $pos_code], true);
-			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $pos_code], true);
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['temp_key_id' => $id], true);
+			$check_temp_req_id = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $id], true);
 			$data_pass['slug'] = $check_temp_req_id->slug;
 			$data_pass['status_details'] = 'Posted';
 			$data_pass['publish'] = 'published';
-			$data_pass['requisition_id'] = $req_id;
-			$data_pass['position_code'] = $pos_code;
-			unset($data_pass['id']);
 			
 			// echo "<pre>"; print_r($data_pass); exit;
 			if ($check_req_id) {
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
-				$inserted = $this->common->updateQuery(TBL_JOB, array('position_code' => $pos_code), $data_pass);
+				$inserted = $this->common->updateQuery(TBL_JOB, array('temp_key_id' => $id), $data_pass);
 			} else {
+				$check_requisition = $this->common->getWhere(TBL_JOB, ['requisition_id' => $check_temp_req_id->requisition_id], true);
+				if($check_requisition) {
+					$inserted = $this->common->updateQuery(TBL_JOB, array('id' => $check_requisition->id), array('publish' => $data_pass['publish']));
+				} else {
+					$data_pass['datetime'] = $check_temp_req_id->datetime;
+					$data_pass['temp_key_id'] = $id;
+					$inserted = $this->db->insert(TBL_JOB, $data_pass);
+				}
+				unset($data_pass['temp_key_id']);
 				$updated = $this->db->update(TBL_JOB_TEMP, $data_pass, array('id' => $id));
-				$data_pass['datetime'] = $check_temp_req_id->datetime;
-				$inserted = $this->db->insert(TBL_JOB, $data_pass);
 			}
+
+			/*Record Update START*/
 			$array1 = (array) $check_req_id; 
 			$removedKeyValuePairs = array_diff_assoc($data_pass, $array1);
 			if($removedKeyValuePairs) {
@@ -417,6 +431,7 @@ class Admin extends CI_Controller
 				];
 				$this->taleo_updates($taleoData);
 			}
+			/*Record Update END*/
 			
 			if ($inserted) {
 				echo json_encode(array('type' => 'success', 'msg' => 'Opportunity has been updated successfully.'));
@@ -434,7 +449,17 @@ class Admin extends CI_Controller
 				$id = $this->input->post('id');
 				$table = $this->input->post('cat');
 				$get_data = $this->common->getWhere($table, ['id' => $id], true);
-				$data = $this->db->delete($table, array('id' => $id));
+				// _e($table); exit;
+				if($table == TBL_JOB) {
+					$data = $this->db->delete($table, array('id' => $id));
+					$data_temp = $this->db->delete(TBL_JOB_TEMP, array('id' => $get_data->temp_key_id));
+				} else if($table == TBL_JOB_TEMP)  {
+					// $data = $this->db->delete($table, array('id' => $id));
+					$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('id' => $id), array('publish' => 'deleted'));
+					// $data_main = $this->db->delete(TBL_JOB, array('temp_key_id' => $get_data->id));
+				}
+				
+				// $data = $this->db->delete($table, array('id' => $id));
 				// $data = $this->admin->dlt($table, $id);
 				$taleoData = [
 					'updated_batch' => 'no',
@@ -453,20 +478,27 @@ class Admin extends CI_Controller
 	{
 		if ($this->input->post()) {
 			$formData = $this->input->post();
-			$check_req_id = $this->common->getWhere(TBL_JOB, ['position_code' => $formData['dataid']], true);
-			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $formData['dataid']], true);
+			$id = $formData['dataid'];
+			$check_req_id = $this->common->getWhere(TBL_JOB, ['temp_key_id' => $id], true);
+			$get_job_data = $this->common->getWhere(TBL_JOB_TEMP, ['id' => $id], true);
 			unset($get_job_data->id);
-			// echo "<pre>"; print_r($get_job_data);exit;
+			// echo "<pre>"; print_r($check_req_id);exit;
 
 			$get_job_data->status_details = 'Posted';
 			$get_job_data->publish = 'published';
 			$publish_ = 'published';
 			if ($check_req_id) {
-				$updateQuery = $this->common->updateQuery(TBL_JOB, array('position_code' => $formData['dataid']), $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('position_code' => $formData['dataid']), array('publish' => $publish_));
+				$updateQuery = $this->common->updateQuery(TBL_JOB, array('temp_key_id' => $id), $get_job_data);
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('id' => $id), array('publish' => $publish_));
 			} else {
-				$inserted = $this->db->insert(TBL_JOB, $get_job_data);
-				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('position_code' => $formData['dataid']), array('publish' => $publish_));
+				$check_requisition = $this->common->getWhere(TBL_JOB, ['requisition_id' => $get_job_data->requisition_id], true);
+				if($check_requisition) {
+					$updateQuery = $this->common->updateQuery(TBL_JOB, array('id' => $check_requisition->id), array('publish' => $publish_));
+				} else {
+					$get_job_data->temp_key_id = $id;
+					$inserted = $this->db->insert(TBL_JOB, $get_job_data);
+				}
+				$updateQuery = $this->common->updateQuery(TBL_JOB_TEMP, array('id' => $id), array('publish' => $publish_));
 			}
 			$taleoData = [
 				'updated_batch' => 'no',
@@ -494,6 +526,8 @@ class Admin extends CI_Controller
 
 	public function import()
 	{
+		echo json_encode(array('error' => true, 'message' => 'Not available'));
+		exit;
 		$this->is_login();
 		$data['page'] = 'import';
 		$all_data = [];
@@ -569,6 +603,8 @@ class Admin extends CI_Controller
 
 	public function jd_import()
 	{
+		echo json_encode(array('error' => true, 'message' => 'Not available'));
+		exit;
 		$this->is_login();
 		$data['page'] = 'jd-import';
 		$all_data = [];
@@ -618,14 +654,6 @@ class Admin extends CI_Controller
 		$this->load->view('elements/footer', $data);
 	}
 
-	// public function publish_post() {
-	// 	if ($this->input->post()) {
-	// 		$formData = $this->input->post();
-	// 		$updateQuery = $this->common->updateQuery(TBL_JOB, array('id' => $formData['dataid']), array('publish' => 'published'));
-	// 		echo json_encode(['success' => true]);
-	// 	}
-	// }
-
 	public function data_import()
 	{
 		/* Temporarily terminating this functionality */
@@ -674,8 +702,6 @@ class Admin extends CI_Controller
 						$slug = uniqid(uniqid());
 					}
 					if ($worksheet[0] == strip_tags($worksheet[0])) {
-
-						// HasBeenApproved => $worksheet[5]
 						$insertData = [
 							'position_code' => $worksheet[10],
 							'requisition_id' => $worksheet[0], //RequisitionNumber
@@ -708,22 +734,24 @@ class Admin extends CI_Controller
 						
 						$tempData = '';
 						if ($checkid) {
-							$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+							$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
 							if($worksheet[9] != 'Posted') {
 								if($check_main_job) {
-									$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], ['publish' => '']);
+									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
 								}
-							} else {
-								if($check_main_job) {
-									if($check_main_job->status_details != 'Posted') {
-										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-									} else {
-										$insertData['publish'] = 'published';
-										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-									}
-								}
-							}
-							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+							} 
+							// else {
+							// 	if($check_main_job) {
+							// 		// if($check_main_job->status_details != 'Posted') {
+							// 		// 	// $this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+							// 		// } 
+							// 		// else {
+							// 		// 	$insertData['publish'] = 'published';
+							// 		// 	$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+							// 		// }
+							// 	}
+							// }
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 
 							$array1 = (array) $checkid; 
 							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
@@ -731,22 +759,7 @@ class Admin extends CI_Controller
 								$tempData = $insertData['position_code'].' -> '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
 							}
 						} else {
-							// $check_current_data_temp = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
-							// $check_current_data = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
-
-							// if($check_current_data_temp) {
-							// 	$this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
-							// } else {
-								// $inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// }
-							
-							// if($worksheet[9] == 'Posted') {
-							// 	$insertData['publish'] = 'published';
-							// 	$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// 	$inserted = $this->db->insert(TBL_JOB, $insertData);
-							// } else {
 								$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// }
 
 							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
 						}
@@ -754,7 +767,6 @@ class Admin extends CI_Controller
 							array_push($taleoTempArray, $tempData);
 						}
 					}
-					// _e($insertData);
 				}
 				$row++;
 			}
@@ -862,7 +874,6 @@ class Admin extends CI_Controller
 							}
 						}
 					}
-					// _e($insertData);
 				}
 				$row++;
 			}
@@ -1019,7 +1030,7 @@ class Admin extends CI_Controller
 					}
 					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
 					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
-					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
 					if ($checkid && $checkid->slug) {
 						$slug = $checkid->slug;
 					} else {
@@ -1060,22 +1071,13 @@ class Admin extends CI_Controller
 						
 						$tempData = '';
 						if ($checkid) {
-							$check_main_job = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+							$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
 							if($worksheet[9] != 'Posted') {
 								if($check_main_job) {
-									$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], ['publish' => '']);
-								}
-							} else {
-								if($check_main_job) {
-									if($check_main_job->status_details != 'Posted') {
-										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-									} else {
-										$insertData['publish'] = 'published';
-										$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-									}
+									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
 								}
 							}
-							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 
 							$array1 = (array) $checkid; 
 							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
@@ -1083,30 +1085,13 @@ class Admin extends CI_Controller
 								$tempData = $insertData['position_code'].' => '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
 							}
 						} else {
-							// $check_current_data_temp = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
-							// $check_current_data = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
-
-							// if($check_current_data_temp) {
-							// 	$this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
-							// } else {
-								// $inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// }
-							
-							// if($worksheet[9] == 'Posted') {
-							// 	$insertData['publish'] = 'published';
-							// 	$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// 	$inserted = $this->db->insert(TBL_JOB, $insertData);
-							// } else {
-								$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							// }
-
+							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
 							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
 						}
 						if($tempData) {
 							array_push($taleoTempArray, $tempData);
 						}
 					}
-					// _e($insertData);
 				}
 				$row++;
 			}
@@ -1134,5 +1119,17 @@ class Admin extends CI_Controller
 				echo json_encode(array('error' => true, 'message' => 'Unable to import data. Please try again..!'));
 				exit;
 			}
+	}
+
+	public function checkJob() {
+		if ($this->input->post()) {
+			extract($this->input->post());
+			// echo $datavalue;
+			$checkReqID = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $datavalue, 'publish !=' => 'deleted'], false);
+			if($checkReqID) {
+				echo json_encode(array('type' => 'error', 'msg' => 'Requisition ID you have entered is already existing'));
+				exit;
+			}
+		}
 	}
 }

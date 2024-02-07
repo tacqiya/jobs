@@ -40,4 +40,16 @@ class Demo extends CI_Controller {
 			redirect(LOGIN_URL, 'refresh');
 		}
 	}
+
+	public function add_foreign_key() {
+		// echo "Unavailable";exit;
+		$opportunities = $this->common->getWhere(TBL_JOB, ['publish' => 'published'], false, 'id DESC');
+		foreach($opportunities as $oppr) {
+			$check_temp_job = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $oppr->position_code], true);
+			if($check_temp_job) {
+				// echo "<pre>"; print_r($check_temp_job);
+				$this->common->updateQuery(TBL_JOB, ['id' => $oppr->id], ['temp_key_id' => $check_temp_job->id]);
+			}
+		}
+	}
 }

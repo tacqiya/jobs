@@ -185,4 +185,14 @@ class Common_model extends CI_Model {
         return $query->row();
     }
 
+    public function insert($table, $valueArray){
+        $this->db->insert($table, $valueArray);
+        return ($this->db->trans_status()) ? $this->db->insert_id() : false;
+    }
+    
+    public function insertAll($table, $valueArray){
+        $this->db->insert_batch($table, $valueArray);
+        return ($this->db->trans_status()) ? true : false;
+    }
+
 }

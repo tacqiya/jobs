@@ -36,3 +36,7 @@ $route[ADMIN_URL . '/manual-import'] = 'admin/manual_import';
 // DEMO
 $route[ADMIN_URL . '/demo-unpublished'] = 'Demo';
 $route[ADMIN_URL . '/demo-published'] = 'Demo/published';
+
+
+$route[ADMIN_URL . '/add-foreign-key'] = 'Demo/add_foreign_key';
+$route[ADMIN_URL .'/check-post'] = 'admin/checkJob';

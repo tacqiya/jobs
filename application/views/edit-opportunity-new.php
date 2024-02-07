@@ -9,7 +9,6 @@
                 <option value="Staff" <?= ($opportunity->category == 'Staff') ? 'selected' : ''; ?>>Staff</option>
                 <option value="Faculty" <?= ($opportunity->category == 'Faculty') ? 'selected' : ''; ?>>Faculty</option>
                 <option value="Research" <?= ($opportunity->category == 'Research') ? 'selected' : ''; ?>>Research</option>
-                <option value="General Application" <?= ($opportunity->category == 'General Application') ? 'selected' : ''; ?>>General Application</option>
             </select>
         </div>
 
@@ -25,11 +24,11 @@
 
         <div class="form-group clear">
             <label>Requistion ID <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" required disabled />
+            <input class="input-field" type="text" name="requisition_id" value="<?= $opportunity->requisition_id ?>" required />
         </div>
         <div class="form-group clear">
             <label>Position Code <span class="text-danger text-bold" title="Mandatory">*</span></label>
-            <input class="input-field" type="text" name="position_code" value="<?= $opportunity->position_code ?>" required disabled />
+            <input class="input-field" type="text" name="position_code" value="<?= $opportunity->position_code ?>" required />
         </div>
         <div class="form-group clear">
             <label>Position Title <span class="text-danger text-bold" title="Mandatory">*</span></label>

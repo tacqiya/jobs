@@ -1,7 +1,7 @@
 <div class="page">
     <h6 class="common-title">Add Job</h6>
     <div class="form">
-        <?php echo form_open_multipart('', array('id' => 'form')); ?>
+        <?php echo form_open_multipart(current_url(), array('id' => 'register-form')); ?>
         <div class="form-group clear">
             <label>Category</label>
             <select class="input-field" name="category" id="category">
@@ -9,8 +9,6 @@
                         <option value="Staff">Staff</option>
                         <option value="Faculty">Faculty</option>
                         <option value="Research">Research</option>
-                <option value="General Application">General Application</option>
-
             </select>
         </div>
         <div class="form-group clear" style="display: none;" >
@@ -24,7 +22,7 @@
         </div>
 
         <div class="form-group clear">
-            <label>Requistion ID</label>
+            <label>Requistion ID <span class="text-danger text-bold" title="Mandatory">*</span></label>
             <input class="input-field" type="text" name="requisition_id" required />
         </div>
         <div class="form-group clear">
@@ -148,13 +146,14 @@
 
         <div class="form-group clear">
             <label></label>
-            <input type="submit" value="Add Job" class="common-button" />
+            <input type="submit" value="Add Job" class="common-button" id="submit-btn" />
         </div>
         </form>
     </div>
 </div>
 
 <script>
+
     CKEDITOR.replace('descriptions', {
         plugins: 'wysiwygarea,toolbar,basicstyles,link,list,format'
     }).on('required', function(evt) {
@@ -197,6 +196,84 @@
             $('#hiring_manager_name').prev().children().show();
             $('#hiring_manager_email').prev().children().show();
         }
+    });
+
+
+    $("input[name='requisition_id']").on('change', function(){
+        let id = $(this).val();
+        $.ajax({
+            type: "POST",
+            url: "<?= base_url() . ADMIN_URL . '/check-post' ?>",
+            dataType: "json",
+            data: {
+                datavalue: id
+            }
+        }).done(function(msg) {  console.log(msg)
+            if(msg.type == 'error') { 
+                $.dialog({
+                        type: 'red',
+                        title: 'Failed',
+                        content: msg.msg,
+                        boxWidth: ($(window).width() > 700) ? '30%' : '90%',
+                        useBootstrap: false,
+                    });
+                    
+                // $('body').append('<div class="new-alert success">'+ msg.msg +'</div>');
+                // setTimeout(function() {
+                //         $(".new-alert").hide();
+                //         $(".new-alert").remove();
+                //     }, 5000);
+            }
+            // $('body').append('<div class="new-alert success">'+ id +' has been published.</div>');
+        });
+    }); 
+
+
+    $("#register-form").submit(function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var formData = new FormData($(this)[0]);
+        var actionUrl = form.attr('action');
+        let id = $("input[name='requisition_id']").val();
+            $.ajax({
+            url: actionUrl,
+            type: "POST",
+            dataType: "json",
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+        }).done(function(msg) { console.log(msg.type)
+            if(msg.type == 'success') {
+                $.dialog({
+                        type: 'green',
+                        title: 'Success',
+                        content: msg.msg,
+                        boxWidth: ($(window).width() > 700) ? '30%' : '90%',
+                        useBootstrap: false,
+                    });
+                // $('body').append('<div class="new-alert success">'+ msg.msg +'</div>');
+                setTimeout(function() {
+                        // $(".new-alert").hide();
+                        // $(".new-alert").remove();
+                        window.location.href = msg.url;
+                    }, 3000);
+            } else {
+                $.dialog({
+                        type: 'red',
+                        title: 'Failed',
+                        content: msg.msg,
+                        boxWidth: ($(window).width() > 700) ? '30%' : '90%',
+                        useBootstrap: false,
+                    });
+                // $('body').append('<div class="new-alert error">'+ msg.msg +'</div>');
+                // setTimeout(function() {
+                //         $(".new-alert").hide();
+                //         $(".new-alert").remove();
+                //     }, 3000);
+            }
+        });
     });
 
 </script>
