@@ -287,7 +287,12 @@ class Admin extends CI_Controller
 		$this->is_login();
 		$data['page'] = 'all-opportunities-temp';
 		// $data['opportunities'] = $this->common->getAll(TBL_JOB_TEMP, 'id', 'DESC');
-		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published', 'publish !=' => 'deleted'], false, 'id DESC'); //_e($this->db->last_query());exit;
+		$data['opportunities'] = $this->common->getWhere(TBL_JOB_TEMP, ['publish !=' => 'published'], false, 'id DESC'); //_e($data['opportunities']);exit;
+		foreach($data['opportunities'] as $key => $opo) {
+			if($opo->publish == 'deleted') {
+				unset($data['opportunities'][$key]);
+			}
+		}
 		$this->load->view('elements/header', $data);
 		$this->load->view('elements/sidebar', $data);
 		$this->load->view('opportunities_temp', $data);
@@ -658,7 +663,6 @@ class Admin extends CI_Controller
 	{
 		/* Temporarily terminating this functionality */
 		echo "Temporarily Unavailable"; exit;
-		// echo $_SERVER['DOCUMENT_ROOT'].'/wordpress-test/career-opportunities/excel-dump/jobs_file.csv';exit;
 		$check_import_data_exist = $this->common->getAll(TBL_JOB_TEMP, 'id', 'ASC');
 		if($check_import_data_exist) {
 			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/New_Requisitions.csv';
@@ -695,7 +699,7 @@ class Admin extends CI_Controller
 					}
 					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
 					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
-					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
 					if ($checkid && $checkid->slug) {
 						$slug = $checkid->slug;
 					} else {
@@ -703,65 +707,58 @@ class Admin extends CI_Controller
 					}
 					if ($worksheet[0] == strip_tags($worksheet[0])) {
 						$insertData = [
-							'position_code' => $worksheet[10],
+							'position_code' => $worksheet[12],
 							'requisition_id' => $worksheet[0], //RequisitionNumber
 							'requisition_title' => $worksheet[2], //RequisitionTitle
 							'description_value' => $worksheet[1], //RequisitionDescription
-							'date_posted' => $worksheet[6], //TargetStartDate
-							'status_details' => $worksheet[9], //StatusDetails
+							'date_posted' => $worksheet[8], //TargetStartDate
+							'status_details' => $worksheet[11], //StatusDetails
 							// 'project_code' => $worksheet[10], //PROJECTCODE
-							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
-							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
-							'project_manager_name' => $worksheet[14], //PROJECTMANAGER
-							'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
-							'descriptions' => $worksheet[17], //DescriptionExternalHTML
-							'closing_date' => $worksheet[19], //COMPLETION_DATE
-							'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
-							'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
-							'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
-							'recruiter_email' => $worksheet[26], //RecruiterEmail
-							'org_name' => $worksheet[29], //Organization
-							'sector_name' => $worksheet[30], //Sector
-							'division_name' => $worksheet[31], //Division
-							'dept_name' => $worksheet[32], //Department
+							'project_auth_name' => $worksheet[13], //PROJECTAUTHORIZER
+							'project_auth_email' => $worksheet[14], //PROJECTAUTHORIZEREMAIL
+							'project_manager_name' => $worksheet[16], //PROJECTMANAGER
+							'project_manager_email' => $worksheet[17], //PROJECTMANAGEREMAIL
+							'descriptions' => $worksheet[19], //DescriptionExternalHTML
+							'qualifications' => $worksheet[21],
+							'closing_date' => $worksheet[23], //COMPLETION_DATE
+							'hiring_manager_name' => $worksheet[24] . ' ' . $worksheet[25], //HiringManagerFirstName + HiringManagerLastName
+							'hiring_manager_email' => $worksheet[27], //HiringManagerEmail
+							'recruiter_name' => $worksheet[28] . ' ' . $worksheet[29], //RecruiterFirstName + RecruiterLastName
+							'recruiter_email' => $worksheet[30], //RecruiterEmail
+							'org_name' => $worksheet[33], //Organization
+							'sector_name' => $worksheet[34], //Sector
+							'division_name' => $worksheet[35], //Division
+							'dept_name' => $worksheet[36], //Department
 							'apply_link' => $apply_link,
 							'publish' => '',
 							'slug' => $slug,
 							'category' => $worksheet[4], //Category
-							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
+							'college' => (strpos(strtolower($worksheet[36]), 'college') !== false) ? $worksheet[36] : '',
 							'datetime' => date('Y-m-d H:i:s')
 						];
 						
 						$tempData = '';
 						if ($checkid) {
 							$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
-							if($worksheet[9] != 'Posted') {
+							if($worksheet[11] != 'Posted') {
 								if($check_main_job) {
 									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
 								}
-							} 
-							// else {
-							// 	if($check_main_job) {
-							// 		// if($check_main_job->status_details != 'Posted') {
-							// 		// 	// $this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-							// 		// } 
-							// 		// else {
-							// 		// 	$insertData['publish'] = 'published';
-							// 		// 	$this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
-							// 		// }
-							// 	}
-							// }
+							} else {
+								if($check_main_job) {
+									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => 'published']);
+								}
+							}
 							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 
 							$array1 = (array) $checkid; 
 							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
 							if($removedKeyValuePairs) {
-								$tempData = $insertData['position_code'].' -> '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
+								$tempData = $insertData['requisition_id'].' -> '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed => Post updated';
 							}
 						} else {
 								$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-
-							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
+								$tempData = $insertData['requisition_id'].' has been added to unpublished jobs => Newly added post';
 						}
 						if($tempData) {
 							array_push($taleoTempArray, $tempData);
@@ -823,7 +820,7 @@ class Admin extends CI_Controller
 					}
 					// if(strtolower($worksheet[31]) != 'temp researcher internal fund' && strtolower($worksheet[31]) != 'temp researcher external fund') {
 					$apply_link = 'https://careers.ku.ac.ae/careersection/application.jss?lang=en&type=1&csNo=10060&portal=8116755942&reqNo=' . $worksheet[0] . '&isOnLogoutPage=true';
-					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], true);
+					$checkid = $this->common->getWhere(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], true);
 					if ($checkid && $checkid->slug) {
 						$slug = $checkid->slug;
 					} else {
@@ -861,14 +858,14 @@ class Admin extends CI_Controller
 							'datetime' => date('Y-m-d H:i:s')
 						];
 						if ($checkid) {
-							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['position_code' => $worksheet[10]], $insertData);
+							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
 						} else {
 							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);	
 						}
-						$checkNewTable = $this->common->getWhere(TBL_JOB, ['position_code' => $worksheet[10]], true);
+						$checkNewTable = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
 						if($worksheet[9] == 'Posted') {
 							if($checkNewTable) {
-								$inserted_2 = $this->common->updateQuery(TBL_JOB, ['position_code' => $worksheet[10]], $insertData);
+								$inserted_2 = $this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], $insertData);
 							} else {
 								$inserted_2 = $this->db->insert(TBL_JOB, $insertData);
 							}
@@ -996,7 +993,7 @@ class Admin extends CI_Controller
 
 	public function manual_import()
 	{
-			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/req.csv';
+			$path = $_SERVER['DOCUMENT_ROOT'] . '/career-opportunities/excel-dump/New_Requisitions.csv';
 			$taleoDatainit = [
 				'updated_batch' => 'no',
 				'updated_method' => 'Manual Run',
@@ -1040,41 +1037,46 @@ class Admin extends CI_Controller
 
 						// HasBeenApproved => $worksheet[5]
 						$insertData = [
-							'position_code' => $worksheet[10],
+							'position_code' => $worksheet[12],
 							'requisition_id' => $worksheet[0], //RequisitionNumber
 							'requisition_title' => $worksheet[2], //RequisitionTitle
 							'description_value' => $worksheet[1], //RequisitionDescription
-							'date_posted' => $worksheet[6], //TargetStartDate
-							'status_details' => $worksheet[9], //StatusDetails
+							'date_posted' => $worksheet[8], //TargetStartDate
+							'status_details' => $worksheet[11], //StatusDetails
 							// 'project_code' => $worksheet[10], //PROJECTCODE
-							'project_auth_name' => $worksheet[11], //PROJECTAUTHORIZER
-							'project_auth_email' => $worksheet[12], //PROJECTAUTHORIZEREMAIL
-							'project_manager_name' => $worksheet[14], //PROJECTMANAGER
-							'project_manager_email' => $worksheet[15], //PROJECTMANAGEREMAIL
-							'descriptions' => $worksheet[17], //DescriptionExternalHTML
-							'closing_date' => $worksheet[19], //COMPLETION_DATE
-							'hiring_manager_name' => $worksheet[20] . ' ' . $worksheet[21], //HiringManagerFirstName + HiringManagerLastName
-							'hiring_manager_email' => $worksheet[23], //HiringManagerEmail
-							'recruiter_name' => $worksheet[24] . ' ' . $worksheet[25], //RecruiterFirstName + RecruiterLastName
-							'recruiter_email' => $worksheet[26], //RecruiterEmail
-							'org_name' => $worksheet[29], //Organization
-							'sector_name' => $worksheet[30], //Sector
-							'division_name' => $worksheet[31], //Division
-							'dept_name' => $worksheet[32], //Department
+							'project_auth_name' => $worksheet[13], //PROJECTAUTHORIZER
+							'project_auth_email' => $worksheet[14], //PROJECTAUTHORIZEREMAIL
+							'project_manager_name' => $worksheet[16], //PROJECTMANAGER
+							'project_manager_email' => $worksheet[17], //PROJECTMANAGEREMAIL
+							'descriptions' => $worksheet[19], //DescriptionExternalHTML
+							'qualifications' => $worksheet[21],
+							'closing_date' => $worksheet[23], //COMPLETION_DATE
+							'hiring_manager_name' => $worksheet[24] . ' ' . $worksheet[25], //HiringManagerFirstName + HiringManagerLastName
+							'hiring_manager_email' => $worksheet[27], //HiringManagerEmail
+							'recruiter_name' => $worksheet[28] . ' ' . $worksheet[29], //RecruiterFirstName + RecruiterLastName
+							'recruiter_email' => $worksheet[30], //RecruiterEmail
+							'org_name' => $worksheet[33], //Organization
+							'sector_name' => $worksheet[34], //Sector
+							'division_name' => $worksheet[35], //Division
+							'dept_name' => $worksheet[36], //Department
 							'apply_link' => $apply_link,
 							'publish' => '',
 							'slug' => $slug,
 							'category' => $worksheet[4], //Category
-							'college' => (strpos(strtolower($worksheet[32]), 'college') !== false) ? $worksheet[32] : '',
+							'college' => (strpos(strtolower($worksheet[36]), 'college') !== false) ? $worksheet[36] : '',
 							'datetime' => date('Y-m-d H:i:s')
 						];
-						
+						// echo "<pre>"; print_r($checkid); exit;
 						$tempData = '';
 						if ($checkid) {
 							$check_main_job = $this->common->getWhere(TBL_JOB, ['requisition_id' => $worksheet[0]], true);
-							if($worksheet[9] != 'Posted') {
+							if($worksheet[11] != 'Posted') {
 								if($check_main_job) {
 									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => '']);
+								}
+							} else {
+								if($check_main_job) {
+									$this->common->updateQuery(TBL_JOB, ['requisition_id' => $worksheet[0]], ['publish' => 'published']);
 								}
 							}
 							$inserted = $this->common->updateQuery(TBL_JOB_TEMP, ['requisition_id' => $worksheet[0]], $insertData);
@@ -1082,11 +1084,11 @@ class Admin extends CI_Controller
 							$array1 = (array) $checkid; 
 							$removedKeyValuePairs = array_diff_assoc($insertData, $array1);
 							if($removedKeyValuePairs) {
-								$tempData = $insertData['position_code'].' => '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed';
+								$tempData = $insertData['requisition_id'].' => '.implode(", ", array_keys($removedKeyValuePairs)).' has been changed => Post updated';
 							}
 						} else {
 							$inserted = $this->db->insert(TBL_JOB_TEMP, $insertData);
-							$tempData = $insertData['position_code'].' has been added to unpublished jobs.';
+							$tempData = $insertData['requisition_id'].' has been added to unpublished jobs => Newly added post';
 						}
 						if($tempData) {
 							array_push($taleoTempArray, $tempData);

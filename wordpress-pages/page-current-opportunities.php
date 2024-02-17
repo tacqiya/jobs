@@ -1,9 +1,9 @@
 <?php
 $preview = (isset($_GET['preview']))?true:false;
-if(!$preview){
-  header('Location: https://careers.ku.ac.ae/careersection/ku+external+portal/moresearch.ftl?lang=en&portal=8116755942');
-  exit();
-}
+//if(!$preview){
+  //header('Location: https://careers.ku.ac.ae/careersection/ku+external+portal/moresearch.ftl?lang=en&portal=8116755942');
+  //exit();
+//}
 if (isset($_POST['job-search'])) {
     if ($_POST['search-job'] != '') {
         global $wpdb;
@@ -145,14 +145,14 @@ if (have_posts()) : the_post();
                         ?>
                     </div>
                 </div>
-                <div class="blockser_sub clear">
+                <!-- <div class="blockser_sub clear">
                     <button class="dropbtn">Colleges</button>
                     <div class="dropdown-content">
                         <span data-id="1">College of Engineering</span>
                         <span data-id="2">College of Arts and Science</span>
                         <span data-id="3">College of Medicine and Health Science</span>
                     </div>
-                </div>
+                </div> -->
 
                 <br class="px-60">
 
@@ -231,8 +231,12 @@ if (have_posts()) : the_post();
                         apply_before = '<h4>Apply before :</h4>' +
                                 '<h5>' + formattedDate + '</h5>';
                     }
-                    var text = data[i].description_value;
-                    dec_val = text.replace("."+data[i].position_code, "")
+                    var dec_val = data[i].description_value;
+                    var char = '.';
+                    var lastIndex = dec_val.lastIndexOf(char);
+                    if (lastIndex !== -1) {
+                        dec_val = dec_val.substring(0, lastIndex);
+                    }
                     if(data[i].dept_name == 'Temp Researcher Internal Fund' || data[i].dept_name == 'Temp Researcher External Fund') {
                         $depts = '<h4 class="department"></h4>';
                     } else {
@@ -378,6 +382,15 @@ if (have_posts()) : the_post();
                                 hideWhenLessThanOnePage: true,
                                 autoHidePrevious: true,
                                 autoHideNext: true,
+                                afterPageOnClick: function() {
+                                    $("html, body").animate({ scrollTop: 500 }, "slow");
+                                },
+                                afterNextOnClick: function() {
+                                    $("html, body").animate({ scrollTop: 500 }, "slow");
+                                },
+                                afterPreviousOnClick: function() {
+                                    $("html, body").animate({ scrollTop: 500 }, "slow");
+                                },
                                 callback: function (data, pagination) {
                                     // template method of yourself
                                     var html = template(data);
@@ -410,6 +423,11 @@ if (have_posts()) : the_post();
     <?php } ?>
 
     <script>
+        // $('.paginationjs-page').on( "click", function() {
+        //     console.log('paginate');
+        //         $("html, body").animate({ scrollTop: 500 }, "slow");
+        // });
+
         $(document).ready(function () {
             $('.blockser_sub').hide();
             $('.tab-type-1 .tab').click(function () {

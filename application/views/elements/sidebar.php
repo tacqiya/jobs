@@ -20,6 +20,7 @@
                     <li class="<?php echo ($page == 'add-opportunity') ? 'active' : ''; ?>"><a href="<?php echo base_url() . ADMIN_URL; ?>/add-opportunity">Add Job</a></li>
                 </ul>
             </li>
+            <?php if('show' != 'show') { ?>
             <li class="hasSub inquiries">
                 <i></i>
                 <a class="<?php echo ($page == 'import' || $page == 'jd-import') ? 'active' : ''; ?>" href="#">Import</a>
@@ -28,7 +29,6 @@
                     <li class="<?php echo ($page == 'jd-import') ? 'active' : ''; ?>"><a  href="<?php echo base_url() . ADMIN_URL; ?>/jd-import">Import Job Descriptions</a></li>
                 </ul>
             </li>
-            <?php if('show' != 'show') { ?>
             <li class="inspired" style="display: none;">
                 <i></i>
                 <a class="<?php echo ($page == 'post-updates') ? 'active' : ''; ?>" href="<?php echo base_url() . ADMIN_URL; ?>/post-updates">Logs</a>
